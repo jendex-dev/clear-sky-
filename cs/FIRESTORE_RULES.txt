@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner() {
+      return signedIn() && request.auth.token.email in ['boss_vertoletus@clear-sky.example'];
+    }
+    function isLeader() {
+      return isOwner() || (signedIn() && exists(/databases/$(database)/documents/leaders/$(request.auth.uid)));
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isLeader());
+      allow create: if signedIn() && request.auth.uid == userId
+        && request.resource.data.merits == 0
+        && request.resource.data.points == 0
+        && request.resource.data.level == 0;
+      allow update: if signedIn() && request.auth.uid == userId
+        && request.resource.data.nick == resource.data.nick
+        && request.resource.data.level >= resource.data.level
+        && request.resource.data.level <= resource.data.level + 1;
+      allow update: if isLeader()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['merits', 'points', 'extra']);
+      allow delete: if signedIn() && request.auth.uid == userId;
+    }
+
+    match /leaders/{leaderId} {
+      allow read: if signedIn() && (request.auth.uid == leaderId || isLeader());
+      allow write: if isOwner();
+    }
+
+    match /clothes/{docId} {
+      allow read, write: if signedIn() && docId.matches(request.auth.uid + '_(shirt|pants)');
+    }
+  }
+}

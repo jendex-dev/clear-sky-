@@ -279,7 +279,20 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
 .acc-table th{font-family:var(--f-display);font-weight:500;letter-spacing:.07em;text-transform:uppercase;font-size:13px;color:var(--muted);text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
 .acc-table td{padding:7px 10px;border-bottom:1px solid rgba(158,195,230,.08)}
 .acc-table td.n{color:#fff;font-weight:600}
-.acc-wrap{max-height:240px;overflow:auto}
+.acc-wrap{max-height:240px;overflow:auto;margin:10px 0}
+.acc-table tr.pick{cursor:pointer;transition:background .15s}
+.acc-table tr.pick:hover{background:rgba(75,125,163,.18)}
+.acc-table tr.sel{background:rgba(158,195,230,.22)}
+.adj{display:grid;gap:10px;padding:12px 14px;border:1px solid rgba(233,200,90,.4);background:rgba(233,200,90,.05)}
+.adj-who b{color:#fff}.adj-who span{color:var(--muted);margin-left:6px}
+.adj-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.adj-row label{font-family:var(--f-display);letter-spacing:.07em;text-transform:uppercase;font-size:13px;color:var(--mist)}
+.adj-row input{width:110px}
+.adj-lbl{display:block;font-size:13px;color:var(--mist);margin-bottom:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips em{color:var(--muted);font-size:13px}
+.chip{font-size:13px;padding:5px 10px;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.45);color:#ffb1b1;transition:background .15s,color .15s}
+.chip:hover{background:rgba(255,107,107,.35);color:#fff}
+.acc-table .tag{font-size:11px;padding:2px 6px;margin-left:6px}
 .track strong{display:block;font-family:var(--f-display);font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:19px}
 .track small{color:var(--muted)}
 
@@ -367,7 +380,7 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
         <p>Валюта, которую вы получаете за выполнение той или иной работы. Очки не выдаются за сборы, но могут быть конвертированы в заслуги. Очки можно тратить лишь на нестандартные вещи.</p>
         <p>Курс очков к заслугам:<br><span class="rate">25 очков = 1 заслуга</span></p>
         <h3>Паки снаряжения</h3>
-        <p>Стандартные паки, которые покупаются за заслуги. В этих паках лежит основное снаряжение, необходимое тому или иному рангу. Вещи, которые не входят в эти паки, вы можете докупать за очки, если ваш ранг это позволяет. Все эти паки вы обязаны покупать по очереди, то бишь с новичка на мастера просто накопив проскочить не получится. Ненужные вам вещи в паке вы можете вернуть на склад, получив половину от их первоначальной стоимости.</p>
+        <p>Стандартные паки, которые покупаются за заслуги. В этих паках лежит основное снаряжение, необходимое тому или иному рангу. Вещи, которые не входят в эти паки, вы можете докупать за очки, если ваш ранг это позволяет. Все эти паки вы обязаны покупать по очереди, то бишь с новичка на мастера просто накопив проскочить не получится.</p>
       </div>
     </div>
   </header>
@@ -493,8 +506,21 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
       </div>
       <div class="box wide" id="acc-box" hidden>
         <div class="acc-head"><h2>Аккаунты (для лидера)</h2><button class="btn btn-sm" type="button" data-act="acc-refresh">Обновить</button></div>
+        <div class="adj" id="adj" hidden>
+          <div class="adj-who">Выбран: <b id="adj-nick"></b> <span id="adj-vals"></span></div>
+          <div class="adj-row">
+            <label for="adj-n">Количество</label>
+            <input type="number" id="adj-n" min="1" value="10">
+            <button class="btn btn-sm" type="button" data-act="adj" data-k="points" data-s="1">+ очки</button>
+            <button class="btn btn-sm btn-danger" type="button" data-act="adj" data-k="points" data-s="-1">− очки</button>
+            <button class="btn btn-sm" type="button" data-act="adj" data-k="merits" data-s="1">+ заслуги</button>
+            <button class="btn btn-sm btn-danger" type="button" data-act="adj" data-k="merits" data-s="-1">− заслуги</button>
+          </div>
+          <div class="adj-items"><span class="adj-lbl">Предметы, купленные за очки (нажмите, чтобы забрать):</span><div id="adj-items" class="chips"></div></div>
+          <div id="adj-lead-wrap"><button class="btn btn-sm" type="button" data-act="toggle-lead" id="adj-lead">Назначить лидером</button></div>
+        </div>
         <div class="acc-wrap"><table class="acc-table"><thead><tr><th>Ник</th><th>Ранг</th><th>Очки</th><th>Заслуги</th></tr></thead><tbody id="acc-rows"></tbody></table></div>
-        <small style="color:var(--muted)">Здесь видны все зарегистрированные аккаунты.</small>
+        <small style="color:var(--muted)">Нажмите на игрока в списке: можно выдать или забрать очки и заслуги, забрать купленный предмет и (владельцу) назначить лидера.</small>
       </div>
     </section>
   </main>
@@ -570,13 +596,14 @@ const ICONS = {
 const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||''}</svg>`;
 
 /* ================== СОСТОЯНИЕ И БАЗА ДАННЫХ ================== */
-let cur = null, uid = null, unwatch = null, saveTimer = null, deleting = false, allUsers = [];
+let cur = null, uid = null, unwatch = null, saveTimer = null, deleting = false, allUsers = [], selUser = '', leaderFlag = false, leaderIds = new Set();
 const clothCache = {shirt:'', pants:''};
 const me = () => cur;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $ = id => document.getElementById(id);
 const rankOf = u => RANKS[u.level];
-const isLeader = u => !!u && CONFIG.LEADERS.some(n => n.toLowerCase() === u.nick.toLowerCase());
+const isOwner = u => !!u && CONFIG.LEADERS.some(n => n.toLowerCase() === u.nick.toLowerCase());
+const isLeader = u => !!u && (isOwner(u) || (u === cur && leaderFlag));
 const rnd = n => { const a = new Uint32Array(1); (window.crypto||{getRandomValues:x=>{x[0]=Math.random()*4294967296}}).getRandomValues(a); return a[0] % n; };
 const emailOf = nick => nick.toLowerCase() + '@' + CONFIG.EMAIL_DOMAIN;
 
@@ -590,6 +617,14 @@ function normalize(p){
 }
 
 const FirebaseBackend = {
+  async isLeader(id){ return (await this.fs.collection('leaders').doc(id).get()).exists; },
+  async listLeaders(){ return (await this.fs.collection('leaders').get()).docs.map(d => d.id); },
+  setLeader(id, nick, on){ const r = this.fs.collection('leaders').doc(id); return on ? r.set({nick, at:Date.now()}) : r.delete(); },
+  removeItem(id, itemId){ return this.fs.collection('users').doc(id).update({extra: firebase.firestore.FieldValue.arrayRemove(itemId)}); },
+  async adjust(id, kind, delta){
+    const ref = this.fs.collection('users').doc(id);
+    return this.fs.runTransaction(async t => { const sn = await t.get(ref); const v = Math.max(0, ((sn.data() || {})[kind] || 0) + delta); t.update(ref, {[kind]: v}); return v; });
+  },
   init(){
     if (typeof firebase === 'undefined') throw new Error('не загрузилась библиотека Firebase (проверьте интернет)');
     firebase.initializeApp(CONFIG.FIREBASE); this.auth = firebase.auth(); this.fs = firebase.firestore();
@@ -606,7 +641,7 @@ const FirebaseBackend = {
   async loadProfile(id){ const s = await this.fs.collection('users').doc(id).get(); return s.exists ? s.data() : null; },
   saveProfile(id, data){ return this.fs.collection('users').doc(id).set(data, {merge:true}); },
   watchProfile(id, cb){ return this.fs.collection('users').doc(id).onSnapshot(s => { if (s.exists && !s.metadata.hasPendingWrites) cb(s.data()); }, () => {}); },
-  async listProfiles(){ return (await this.fs.collection('users').get()).docs.map(d => d.data()); },
+  async listProfiles(){ return (await this.fs.collection('users').get()).docs.map(d => Object.assign({}, d.data(), {id:d.id})); },
   async getCloth(id, kind){ const s = await this.fs.collection('clothes').doc(id + '_' + kind).get(); return s.exists ? s.data().data : ''; },
   setCloth(id, kind, data){ const r = this.fs.collection('clothes').doc(id + '_' + kind); return data ? r.set({uid:id, data}) : r.delete(); },
   async deleteAccount(id, pass){
@@ -713,6 +748,7 @@ async function startSession(id, fresh){
     cur = normalize(p); uid = id;
     const [s, pn] = await Promise.all([Backend.getCloth(id,'shirt').catch(()=>''), Backend.getCloth(id,'pants').catch(()=>'')]);
     clothCache.shirt = s || ''; clothCache.pants = pn || '';
+    leaderFlag = await Backend.isLeader(id).catch(() => false);
     if (unwatch) unwatch(); unwatch = Backend.watchProfile(id, onRemote);
     $('a-pass').value = $('a-pass2').value = '';
     enterApp(fresh);
@@ -727,13 +763,46 @@ function onRemote(data){
   cur = normalize(Object.assign({}, cur, data)); renderAll(); refreshOutfit();
 }
 function endSession(){
-  cur = null; uid = null; allUsers = []; if (unwatch) unwatch(); unwatch = null;
+  cur = null; uid = null; allUsers = []; leaderFlag = false; leaderIds = new Set(); selUser = ''; if (unwatch) unwatch(); unwatch = null;
   clothCache.shirt = clothCache.pants = '';
   audio.pause(); curTrack = ''; document.body.classList.remove('playing');
   showAuth();
 }
+async function adjust(kind, sign){
+  if (!isLeader(cur) || !selUser) return;
+  const n = Math.floor(+$('adj-n').value);
+  if (!(n > 0)) return toast('Введите количество больше нуля.', 'bad');
+  const x = allUsers.find(u => u.id === selUser); if (!x) return;
+  try {
+    const val = await Backend.adjust(selUser, kind, sign * n);
+    x[kind] = val;
+    if (selUser === uid){ cur[kind] = val; renderAll(); }
+    renderSettings();
+    toast(`${x.nick}: ${kind === 'points' ? 'очки' : 'заслуги'} теперь ${val}.`, 'good');
+  } catch(e){ toast('Не удалось изменить: ' + authError(e), 'bad'); }
+}
+async function removeItem(itemId){
+  if (!isLeader(cur) || !selUser) return;
+  const x = allUsers.find(u => u.id === selUser); if (!x) return;
+  try {
+    await Backend.removeItem(selUser, itemId);
+    x.extra = (x.extra || []).filter(i => i !== itemId);
+    if (selUser === uid){ cur.extra = cur.extra.filter(i => i !== itemId); renderAll(); }
+    renderSettings(); toast(`У ${x.nick} забран предмет: ${ITEM[itemId].n}.`, 'good');
+  } catch(e){ toast('Не удалось забрать предмет: ' + authError(e), 'bad'); }
+}
+async function toggleLeader(){
+  if (!isOwner(cur) || !selUser) return;
+  const x = allUsers.find(u => u.id === selUser); if (!x) return;
+  const on = !leaderIds.has(x.id);
+  try {
+    await Backend.setLeader(x.id, x.nick, on);
+    on ? leaderIds.add(x.id) : leaderIds.delete(x.id);
+    renderSettings(); toast(on ? `${x.nick} теперь лидер. Панель появится у него после обновления страницы.` : `У ${x.nick} сняты права лидера.`, 'good');
+  } catch(e){ toast('Не удалось изменить права: ' + authError(e), 'bad'); }
+}
 async function loadAccounts(){
-  try { allUsers = await Backend.listProfiles(); renderSettings(); }
+  try { allUsers = await Backend.listProfiles(); try { leaderIds = new Set(await Backend.listLeaders()); } catch(_){} renderSettings(); }
   catch(e){ toast('Не удалось загрузить список аккаунтов: ' + authError(e), 'bad'); }
 }
 
@@ -804,9 +873,7 @@ function renderShop(){
     const lis = p.items.map(i => {
       if (!i.id) return `<li><span>${esc(i.t)}</span></li>`;
       const it = ITEM[i.id], ret = u.returned.includes(i.id);
-      let right = '';
-      if (owned) right = ret ? `<span class="tag">Возвращено</span>` : `<button class="btn btn-sm" type="button" data-act="return-item" data-id="${i.id}">Вернуть +${Math.floor(it.p/2)} оч.</button>`;
-      else right = `<span class="tag">${it.p} оч.</span>`;
+      const right = owned ? '' : `<span class="tag">${it.p} оч.</span>`;
       return `<li class="${ret?'ret':''}"><span>${esc(it.n)}</span>${right}</li>`;
     }).join('');
     return `<details class="pack ${owned?'is-owned':''}" data-lvl="${p.lvl}" ${openPacks.has(p.lvl)?'open':''}>
@@ -835,18 +902,10 @@ function buyPack(lvl){
   if (lvl !== u.level + 1) return toast('Паки покупаются по порядку.', 'bad');
   if (u.merits < p.cost) return toast('Не хватает ' + (p.cost - u.merits) + ' заслуг.', 'bad');
   u.merits -= p.cost; u.level = lvl;
-  let refund = 0;
-  u.extra = u.extra.filter(id => { const it = ITEM[id]; if (it.pack === lvl) { refund += it.p; return false; } return true; });
-  u.points += refund; openPacks.add(lvl); save(); renderAll(); refreshOutfit();
-  toast(p.cost ? `Пак куплен: ${p.name}.` + (refund ? ` Возвращено ${refund} очков за вещи из пака.` : '') : `Получен ${p.name}.`, 'good');
+  u.extra = u.extra.filter(id => ITEM[id].pack !== lvl);   /* вещи из пака теперь входят в пак, очки за них не возвращаются */
+  openPacks.add(lvl); save(); renderAll(); refreshOutfit();
+  toast(p.cost ? `Пак куплен: ${p.name}.` : `Получен ${p.name}.`, 'good');
 }
-function returnItem(id){
-  const u = me(), it = ITEM[id];
-  if (u.returned.includes(id)) return;
-  const back = Math.floor(it.p/2); u.returned.push(id); u.points += back; save(); renderAll();
-  toast(`Вещь возвращена на склад: ${it.n}. Получено ${back} очков.`, 'good');
-}
-
 /* --- конвертация --- */
 const convN = () => Math.max(1, Math.floor(+$('conv-n').value || 1));
 function updateConvPrev(){
@@ -945,7 +1004,18 @@ function renderSettings(){
   $('now-sub').textContent = !t ? 'Выберите файл ниже' : m.off ? 'Музыка выключена' : 'Играет по кругу';
   $('acc-box').hidden = !isLeader(u);
   if (isLeader(u)) $('acc-rows').innerHTML = allUsers.slice().sort((a,b)=>(b.level||0)-(a.level||0)||String(a.nick).localeCompare(String(b.nick))).map(x =>
-    `<tr><td class="n">${esc(x.nick)}</td><td>${RANKS[x.level||0]}</td><td>${x.points||0}</td><td>${x.merits||0}</td></tr>`).join('');
+    `<tr class="pick ${x.id===selUser?'sel':''}" data-act="acc-pick" data-id="${esc(x.id||'')}"><td class="n">${esc(x.nick)}${(leaderIds.has(x.id) || CONFIG.LEADERS.some(n => n.toLowerCase() === String(x.nick).toLowerCase())) ? ' <span class="tag ok">лидер</span>' : ''}</td><td>${RANKS[x.level||0]}</td><td>${x.points||0}</td><td>${x.merits||0}</td></tr>`).join('');
+  const sel = allUsers.find(x => x.id === selUser);
+  $('adj').hidden = !(isLeader(u) && sel);
+  if (sel) {
+    $('adj-nick').textContent = sel.nick; $('adj-vals').textContent = `очки ${sel.points||0}, заслуги ${sel.merits||0}`;
+    const items = (sel.extra || []).filter(id => ITEM[id]);
+    $('adj-items').innerHTML = items.length ? items.map(id => `<button class="chip" type="button" data-act="rm-item" data-id="${id}" title="Забрать предмет">${esc(ITEM[id].n)} ✕</button>`).join('') : '<em>нет</em>';
+    const selOwner = CONFIG.LEADERS.some(n => n.toLowerCase() === String(sel.nick).toLowerCase()), lead = leaderIds.has(sel.id);
+    $('adj-lead-wrap').hidden = !isOwner(u);
+    $('adj-lead').textContent = selOwner ? 'Владелец сайта' : lead ? 'Снять права лидера' : 'Назначить лидером';
+    $('adj-lead').disabled = selOwner;
+  }
   $('tracks').innerHTML = TRACKS.map(x => {
     const on = m.track === x.id;
     return `<div class="track ${on?'is-on':''}"><div><strong>${x.title}</strong><small>${on ? (playing?'играет по кругу':'выбрано') : 'аудиофайл'}</small></div>
@@ -1121,7 +1191,6 @@ document.addEventListener('click', e => {
   else if (a === 'help') toggleHelp();
   else if (a === 'buy-item') buyItem(b.dataset.id);
   else if (a === 'buy-pack') buyPack(+b.dataset.lvl);
-  else if (a === 'return-item') returnItem(b.dataset.id);
   else if (a === 'redeem') redeem();
   else if (a === 'gen') genCode();
   else if (a === 'copy') copyCode();
@@ -1134,6 +1203,10 @@ document.addEventListener('click', e => {
   else if (a === 'cloth-pick') $('file-' + b.dataset.kind).click();
   else if (a === 'cloth-reset'){ setCustom(b.dataset.kind, '').then(() => { refreshOutfit(); toast('Возвращена форма по рангу.'); }); }
   else if (a === 'acc-refresh') loadAccounts();
+  else if (a === 'acc-pick'){ selUser = b.dataset.id; renderSettings(); }
+  else if (a === 'adj') adjust(b.dataset.k, +b.dataset.s);
+  else if (a === 'rm-item') removeItem(b.dataset.id);
+  else if (a === 'toggle-lead') toggleLeader();
   else if (a === 'logout'){ flushSave().finally(() => Backend.logout()); }
 });
 $('code-in').addEventListener('keydown', e => { if (e.key === 'Enter') redeem(); });
