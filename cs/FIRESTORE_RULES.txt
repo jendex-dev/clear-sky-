@@ -6,13 +6,23 @@ service cloud.firestore {
     function isOwner() {
       return signedIn() && request.auth.token.email in ['boss_vertoletus@clear-sky.example'];
     }
-    // лидер = владелец сайта или заместитель (документ в коллекции leaders)
+    function leaderDoc() { return get(/databases/$(database)/documents/leaders/$(request.auth.uid)).data; }
+    // полные права: владелец сайта или заместитель (документ в leaders без role = 'io')
     function isLeader() {
-      return isOwner() || (signedIn() && exists(/databases/$(database)/documents/leaders/$(request.auth.uid)));
+      return isOwner() || (signedIn()
+        && exists(/databases/$(database)/documents/leaders/$(request.auth.uid))
+        && leaderDoc().get('role', 'deputy') != 'io');
     }
+    // лидер ИО: только выдача очков и коды сбора
+    function isIoLead() {
+      return signedIn() && !isOwner()
+        && exists(/databases/$(database)/documents/leaders/$(request.auth.uid))
+        && leaderDoc().get('role', 'deputy') == 'io';
+    }
+    function canGive() { return isLeader() || isIoLead(); }
 
     match /users/{userId} {
-      allow read: if signedIn() && (request.auth.uid == userId || isLeader());
+      allow read: if signedIn() && (request.auth.uid == userId || canGive());
       allow create: if signedIn() && request.auth.uid == userId
         && request.resource.data.merits == 0
         && request.resource.data.points == 0
@@ -27,12 +37,22 @@ service cloud.firestore {
         && request.resource.data.level <= resource.data.level + 1;
       allow update: if isLeader()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['merits', 'points', 'extra', 'reputation']);
+      // лидер ИО может только увеличивать очки
+      allow update: if isIoLead()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points'])
+        && request.resource.data.points >= resource.data.points;
       allow delete: if signedIn() && request.auth.uid == userId;
     }
 
     match /leaders/{leaderId} {
-      allow read: if signedIn() && (request.auth.uid == leaderId || isLeader());
+      allow read: if signedIn() && (request.auth.uid == leaderId || canGive());
       allow write: if isOwner();
+    }
+
+    // члены ИО: назначают лидер ИО и роли с большими полномочиями
+    match /members/{memberId} {
+      allow read: if signedIn() && (request.auth.uid == memberId || canGive());
+      allow write: if canGive();
     }
 
     match /clothes/{docId} {
@@ -43,14 +63,15 @@ service cloud.firestore {
     match /codes/{code} {
       allow get: if signedIn();
       allow list, delete: if isLeader();
-      allow create: if isLeader() && request.resource.data.issuerId == request.auth.uid;
+      allow create: if canGive() && request.resource.data.issuerId == request.auth.uid
+        && request.resource.data.allowed is list && request.resource.data.allowed.size() > 0;
     }
 
-    // журнал аудита: читает только лидер/заместитель, записи не меняются
+    // журнал аудита: читает только лидер/заместитель (лидер ИО только пишет), записи не меняются
     match /audit/{entryId} {
       allow read: if isLeader();
       allow create: if signedIn() && (
-        (isLeader() && request.resource.data.actorId == request.auth.uid)
+        (canGive() && request.resource.data.actorId == request.auth.uid)
         || (request.resource.data.targetId == request.auth.uid && request.resource.data.kind == 'code'));
       allow update, delete: if false;
     }

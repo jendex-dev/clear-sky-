@@ -113,10 +113,10 @@ button{cursor:pointer}
 .tag{display:inline-block;font-family:var(--f-display);letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:4px 9px;border:1px solid var(--line);color:var(--mist)}
 .tag.ok{border-color:rgba(47,212,122,.5);color:var(--ok)}
 
-input[type=text],input[type=password],input[type=number],select{
+input[type=text],input[type=password],input[type=number],select,textarea{
   width:100%;background:rgba(var(--deep-rgb),.7);border:1px solid var(--line);padding:10px 12px;color:var(--text);outline:none;
   transition:border-color .2s,box-shadow .2s}
-input:focus,select:focus{border-color:var(--ice);box-shadow:0 0 0 3px rgba(var(--ice-rgb),.15)}
+input:focus,select:focus,textarea:focus{border-color:var(--ice);box-shadow:0 0 0 3px rgba(var(--ice-rgb),.15)}
 ::placeholder{color:var(--ph)}
 
 #boot{position:fixed;inset:0;z-index:6;display:grid;place-items:center;font-family:var(--f-display);letter-spacing:.14em;text-transform:uppercase;font-size:20px;color:var(--ice);text-align:center;padding:20px}
@@ -233,14 +233,15 @@ main{position:relative;min-width:0;min-height:0;padding:10px max(28px,env(safe-a
 .sect h3{margin:0;font-family:var(--f-display);font-weight:500;letter-spacing:.07em;text-transform:uppercase;font-size:17px;color:var(--mist)}
 .sect.leader{border-color:rgba(233,200,90,.4)}
 .sect.leader h3{color:var(--merit)}
+textarea{resize:vertical;font-family:var(--f-body);font-size:14px}
 .sect small{color:var(--muted);font-size:12.5px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .gen{font-family:var(--f-display);font-size:34px;letter-spacing:.18em;text-align:center;color:var(--ok);padding:10px;border:1px dashed rgba(47,212,122,.5);background:rgba(47,212,122,.07);user-select:all}
 .hist{display:grid;gap:3px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 
 /* --- настройки --- */
-#p-settings{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:16px;max-width:1100px;overflow:auto;align-content:start}
-#p-settings .box{padding:20px 22px;min-height:0;overflow:auto}
+#p-settings{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);grid-auto-rows:min-content;gap:16px;max-width:1100px;overflow:auto;align-content:start}
+#p-settings .box{padding:20px 22px;min-height:0;overflow:visible}
 #p-settings .left{grid-row:1/3;display:grid;align-content:start;gap:22px}
 #p-settings h2{font-size:22px;margin-bottom:12px;color:var(--ice)}
 .switch{display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:var(--f-display);letter-spacing:.07em;text-transform:uppercase;font-size:20px}
@@ -304,6 +305,12 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
   --text:#e6eedd;--muted:#97a88a;
   --ink-rgb:10,18,11;--deep-rgb:5,10,6;--panel-rgb:12,22,13;--steel-rgb:95,138,74;--ice-rgb:181,219,140;
   --plate-text:#86987a;--ph:#667a5c;--soft:#d3dfc6;--edge:#060b06;
+}
+:root[data-skin="io"]{
+  --ink:#0e1c2e;--panel-solid:#14263b;--steel:#6a9cc6;--slate:#6c7b90;--mist:#bcc7d3;--stone:#98a0aa;--ice:#bfe0fa;
+  --text:#eaf1f8;--muted:#9fb0c2;
+  --ink-rgb:14,28,46;--deep-rgb:8,18,32;--panel-rgb:18,34,54;--steel-rgb:106,156,198;--ice-rgb:191,224,250;
+  --plate-text:#8fa2b8;--ph:#70859b;--soft:#d6e2ee;--edge:#091524;
 }
 .emblem .e-ice{stroke:var(--ice)}.emblem .e-steel{stroke:var(--steel)}.emblem .e-fill{fill:var(--panel-solid)}
 .tabs .plate.wide-tab{grid-column:1/-1}
@@ -485,11 +492,13 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
               <div class="field" style="margin:0"><label for="g-amount">Количество</label>
                 <input type="number" id="g-amount" min="1" max="999" value="5"></div>
             </div>
+            <div class="field" style="margin:0"><label for="g-nicks">Кто был на сборе (ники)</label>
+              <textarea id="g-nicks" rows="3" placeholder="Ники через запятую или с новой строки" spellcheck="false"></textarea></div>
             <button class="btn" type="button" data-act="gen">Сгенерировать код сбора</button>
             <div class="gen" id="gen-out" hidden></div>
             <button class="btn btn-sm" type="button" data-act="copy" id="copy-btn" hidden>Скопировать код</button>
             <div class="hist" id="gen-hist"></div>
-            <small>Код можно ввести один раз с каждого аккаунта. Раздавайте его участникам сбора.</small>
+            <small>Код работает только для вписанных ников и один раз с аккаунта. Его можно спокойно выкладывать в объявлении.</small>
           </div>
           <div class="sect">
             <h3>Конвертировать очки / заслуги</h3>
@@ -534,6 +543,7 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
           <div class="skins">
             <button class="btn" type="button" data-act="skin" data-skin="blue" id="skin-blue">Стандартное (синее)</button>
             <button class="btn" type="button" data-act="skin" data-skin="green" id="skin-green">Добровольцев (зелёное)</button>
+            <button class="btn" type="button" data-act="skin" data-skin="io" id="skin-io">ИО</button>
           </div>
         </div>
         <div class="account">
@@ -577,9 +587,9 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
             <input type="number" id="adj-n" min="1" value="10">
             <span id="adj-pl" class="adj-row" style="gap:8px">
             <button class="btn btn-sm" type="button" data-act="adj" data-k="points" data-s="1">+ очки</button>
-            <button class="btn btn-sm btn-danger" type="button" data-act="adj" data-k="points" data-s="-1">− очки</button>
-            <button class="btn btn-sm" type="button" data-act="adj" data-k="merits" data-s="1">+ заслуги</button>
-            <button class="btn btn-sm btn-danger" type="button" data-act="adj" data-k="merits" data-s="-1">− заслуги</button>
+            <button class="btn btn-sm btn-danger" data-full type="button" data-act="adj" data-k="points" data-s="-1">− очки</button>
+            <button class="btn btn-sm" data-full type="button" data-act="adj" data-k="merits" data-s="1">+ заслуги</button>
+            <button class="btn btn-sm btn-danger" data-full type="button" data-act="adj" data-k="merits" data-s="-1">− заслуги</button>
             </span>
             <span id="adj-vol" class="adj-row" style="gap:8px" hidden>
             <button class="btn btn-sm" type="button" data-act="adj-rep25">+25 репутации</button>
@@ -588,10 +598,14 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
             </span>
           </div>
           <div class="adj-items" id="adj-items-wrap"><span class="adj-lbl">Предметы, купленные за очки (нажмите, чтобы забрать):</span><div id="adj-items" class="chips"></div></div>
-          <div id="adj-lead-wrap"><button class="btn btn-sm" type="button" data-act="toggle-lead" id="adj-lead">Назначить заместителем</button></div>
+          <div id="adj-lead-wrap" class="adj-row" style="gap:8px">
+            <button class="btn btn-sm" type="button" data-act="role" data-role="deputy" id="adj-lead">Назначить заместителем</button>
+            <button class="btn btn-sm" type="button" data-act="role" data-role="io" id="adj-iolead">Назначить лидером ИО</button>
+            <button class="btn btn-sm" type="button" data-act="role" data-role="member" id="adj-member">Назначить членом ИО</button>
+          </div>
         </div>
         <div class="acc-wrap"><table class="acc-table"><thead><tr><th>Ник</th><th>Ранг</th><th>Очки</th><th>Заслуги</th><th>Репутация</th></tr></thead><tbody id="acc-rows"></tbody></table></div>
-        <small style="color:var(--muted)">Нажмите на игрока в списке: можно выдать или забрать очки и заслуги, забрать купленный предмет и (лидеру) назначить заместителя. Репутация — только у волонтёров.</small>
+        <small style="color:var(--muted)">Нажмите на игрока в списке: лидер ИО может выдавать только очки и назначать членов ИО. Лидер и заместители могут выдать или забрать очки и заслуги, забрать купленный предмет и (лидеру) назначить заместителя. Репутация — только у волонтёров.</small>
     </div>
       <div class="box wide" id="audit-box" hidden>
         <div class="acc-head"><h2>Журнал аудита</h2><button class="btn btn-sm" type="button" data-act="audit-refresh">Обновить</button></div>
@@ -683,7 +697,7 @@ const RATES = [
 const icon = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||''}</svg>`;
 
 /* ================== СОСТОЯНИЕ И БАЗА ДАННЫХ ================== */
-let cur = null, uid = null, unwatch = null, saveTimer = null, deleting = false, allUsers = [], selUser = '', leaderFlag = false, leaderIds = new Set();
+let cur = null, uid = null, unwatch = null, saveTimer = null, deleting = false, allUsers = [], selUser = '', leaderFlag = '', leaderRoles = new Map(), memberIds = new Set(), memberFlag = false;
 const clothCache = {shirt:'', pants:''};
 const me = () => cur;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -691,7 +705,11 @@ const $ = id => document.getElementById(id);
 const isVol = u => !!u && u.type === 'volunteer';
 const rankOf = u => isVol(u) ? 'Волонтёр' : RANKS[u.level];
 const isOwner = u => !!u && CONFIG.LEADERS.some(n => n.toLowerCase() === u.nick.toLowerCase());
-const isLeader = u => !!u && (isOwner(u) || (u === cur && leaderFlag));
+const isLeader = u => !!u && (isOwner(u) || (u === cur && leaderFlag === 'deputy'));   /* полные права */
+const isIoLead = u => !!u && u === cur && leaderFlag === 'io' && !isOwner(u);        /* лидер ИО: только очки и коды */
+const canGive = u => isLeader(u) || isIoLead(u);
+const roleTag = id => { const x = allUsers.find(a => a.id === id); if (x && CONFIG.LEADERS.some(n => n.toLowerCase() === String(x.nick).toLowerCase())) return 'лидер';
+  const r = leaderRoles.get(id); return r === 'io' ? 'лидер ИО' : r === 'deputy' ? 'заместитель' : memberIds.has(id) ? 'член ИО' : ''; };
 const rnd = n => { const a = new Uint32Array(1); (window.crypto||{getRandomValues:x=>{x[0]=Math.random()*4294967296}}).getRandomValues(a); return a[0] % n; };
 const emailOf = nick => nick.toLowerCase() + '@' + CONFIG.EMAIL_DOMAIN;
 
@@ -705,9 +723,12 @@ function normalize(p){
 }
 
 const FirebaseBackend = {
-  async isLeader(id){ return (await this.fs.collection('leaders').doc(id).get()).exists; },
-  async listLeaders(){ return (await this.fs.collection('leaders').get()).docs.map(d => d.id); },
-  setLeader(id, nick, on){ const r = this.fs.collection('leaders').doc(id); return on ? r.set({nick, at:Date.now()}) : r.delete(); },
+  async leaderRole(id){ const s = await this.fs.collection('leaders').doc(id).get(); return s.exists ? (s.data().role === 'io' ? 'io' : 'deputy') : ''; },
+  async listLeaders(){ return (await this.fs.collection('leaders').get()).docs.map(d => ({id:d.id, role:d.data().role === 'io' ? 'io' : 'deputy'})); },
+  setLeader(id, nick, on, role){ const r = this.fs.collection('leaders').doc(id); return on ? r.set({nick, role, at:Date.now()}) : r.delete(); },
+  async isMember(id){ return (await this.fs.collection('members').doc(id).get()).exists; },
+  async listMembers(){ return (await this.fs.collection('members').get()).docs.map(d => d.id); },
+  setMember(id, nick, on){ const r = this.fs.collection('members').doc(id); return on ? r.set({nick, at:Date.now()}) : r.delete(); },
   removeItem(id, itemId){ return this.fs.collection('users').doc(id).update({extra: firebase.firestore.FieldValue.arrayRemove(itemId)}); },
   async adjust(id, kind, delta){
     const ref = this.fs.collection('users').doc(id), max = kind === 'reputation' ? CONFIG.REP_MAX : Infinity;
@@ -773,6 +794,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) flush
 /* ================== ФОН (камуфляж) ================== */
 const SKINS = {
   blue:  {base:'#4b7da3', layers:[['#a9b3bd',26],['#8a8d96',22],['#5e6779',22],['#9ec3e6',10],['#6f7a8c',14]]},
+  io:    {base:'#6a9cc6', dna:true, layers:[['#b9c6d3',26],['#9aa3ae',22],['#6f7f95',22],['#bfe0fa',10],['#7b8da3',14]]},
   green: {base:'#5a7a4a', layers:[['#a2b38a',26],['#7d8566',22],['#4d5d40',22],['#b5db8c',10],['#6b7a52',14]]}
 };
 const camoCache = {};
@@ -794,6 +816,22 @@ function camoUrl(name){
     const x = r()*S, y = r()*S, R = 30+r()*70;
     for (const dx of [-S,0,S]) for (const dy of [-S,0,S]) blob(x+dx,y+dy,R,col);
   }
+  if (P.dna){
+    /* двойная спираль ДНК: период 300 делит 900, поэтому плитка бесшовная */
+    g.save(); g.lineCap = 'round';
+    for (const X of [150, 450, 750]){
+      const A = 46, per = 300, pts1 = [], pts2 = [];
+      for (let y = -10; y <= S + 10; y += 5){ const a = y/per*Math.PI*2; pts1.push([X+Math.sin(a)*A, y, Math.cos(a)]); pts2.push([X-Math.sin(a)*A, y, -Math.cos(a)]); }
+      g.strokeStyle = 'rgba(226,241,255,.55)'; g.lineWidth = 2;
+      for (let y = 0; y < S; y += 15){ const a = y/per*Math.PI*2, dx = Math.sin(a)*A; g.beginPath(); g.moveTo(X-dx,y); g.lineTo(X+dx,y); g.stroke(); }
+      for (const pts of [pts1, pts2]){
+        g.beginPath(); pts.forEach((p,i) => i ? g.lineTo(p[0],p[1]) : g.moveTo(p[0],p[1]));
+        g.strokeStyle = 'rgba(235,246,255,.85)'; g.lineWidth = 5; g.stroke();
+        g.strokeStyle = 'rgba(90,140,190,.9)'; g.lineWidth = 2; g.stroke();
+      }
+    }
+    g.restore();
+  }
   return camoCache[name] = `url(${c.toDataURL('image/png')})`;
 }
 let skin = '';
@@ -802,7 +840,7 @@ function setSkin(name){
   skin = name;
   if (name === 'green') document.documentElement.setAttribute('data-skin','green'); else document.documentElement.removeAttribute('data-skin');
   $('bg').style.backgroundImage = camoUrl(name);
-  $('skin-blue').classList.toggle('is-on', name === 'blue'); $('skin-green').classList.toggle('is-on', name === 'green');
+  ['blue','green','io'].forEach(k => $('skin-'+k).classList.toggle('is-on', name === k));
 }
 setSkin('blue');
 
@@ -859,10 +897,9 @@ async function startSession(id, fresh){
     cur = normalize(p); uid = id;
     const [s, pn] = await Promise.all([Backend.getCloth(id,'shirt').catch(()=>''), Backend.getCloth(id,'pants').catch(()=>'')]);
     clothCache.shirt = s || ''; clothCache.pants = pn || '';
-    leaderFlag = await Backend.isLeader(id).catch(() => false);
+    leaderFlag = await Backend.leaderRole(id).catch(() => ''); memberFlag = await Backend.isMember(id).catch(() => false);
     if (unwatch) unwatch(); unwatch = Backend.watchProfile(id, onRemote);
     $('a-pass').value = $('a-pass2').value = '';
-    leaderIds = new Set(); if (isOwner(cur) || leaderFlag) { try { leaderIds = new Set(await Backend.listLeaders()); } catch(_){} }
     enterApp(fresh);
   } catch(e){
     cur = null; uid = null; const msg = authError(e);
@@ -875,7 +912,7 @@ function onRemote(data){
   cur = normalize(Object.assign({}, cur, data)); if (cur.theme !== skin) setSkin(cur.theme); renderAll(); refreshOutfit();
 }
 function endSession(){
-  cur = null; uid = null; allUsers = []; leaderFlag = false; leaderIds = new Set(); selUser = ''; auditRows = []; if (unwatch) unwatch(); unwatch = null;
+  cur = null; uid = null; allUsers = []; leaderFlag = ''; memberFlag = false; leaderRoles = new Map(); memberIds = new Set(); selUser = ''; auditRows = []; if (unwatch) unwatch(); unwatch = null;
   clothCache.shirt = clothCache.pants = '';
   audio.pause(); curTrack = ''; document.body.classList.remove('playing');
   setSkin('blue'); showAuth();
@@ -886,7 +923,7 @@ async function logAudit(e){
   catch(err){ toast('Действие выполнено, но запись в журнал не сохранилась: ' + authError(err), 'bad'); }
 }
 async function adjust(kind, sign, nOverride){
-  if (!isLeader(cur) || !selUser) return;
+  if (!selUser || !(isLeader(cur) || (isIoLead(cur) && kind === 'points' && sign > 0))) return;
   const n = nOverride || Math.floor(+$('adj-n').value);
   if (!(n > 0)) return toast('Введите количество больше нуля.', 'bad');
   const x = allUsers.find(u => u.id === selUser); if (!x) return;
@@ -913,15 +950,19 @@ async function removeItem(itemId){
     await logAudit({targetId:x.id, targetNick:x.nick, kind:'item', note:ITEM[itemId].n}); loadAudit();
   } catch(e){ toast('Не удалось забрать предмет: ' + authError(e), 'bad'); }
 }
-async function toggleLeader(){
-  if (!isOwner(cur) || !selUser) return;
+const ROLE_ACC = {deputy:'заместителем', io:'лидером ИО', member:'членом ИО'};
+async function toggleRole(role){
   const x = allUsers.find(u => u.id === selUser); if (!x) return;
-  const on = !leaderIds.has(x.id);
+  if (role === 'member' ? !(isLeader(cur) || isIoLead(cur)) : !isOwner(cur)) return;
+  const on = role === 'member' ? !memberIds.has(x.id) : leaderRoles.get(x.id) !== role;
   try {
-    await Backend.setLeader(x.id, x.nick, on);
-    on ? leaderIds.add(x.id) : leaderIds.delete(x.id);
-    renderSettings(); toast(on ? `${x.nick} теперь заместитель лидера. Панель появится у него после обновления страницы.` : `У ${x.nick} снята роль заместителя.`, 'good');
-    await logAudit({targetId:x.id, targetNick:x.nick, kind:'role', note:on ? 'назначен' : 'снят'}); loadAudit();
+    if (role === 'member') await Backend.setMember(x.id, x.nick, on);
+    else await Backend.setLeader(x.id, x.nick, on, role);
+    if (role === 'member') on ? memberIds.add(x.id) : memberIds.delete(x.id);
+    else on ? leaderRoles.set(x.id, role) : leaderRoles.delete(x.id);
+    renderSettings();
+    toast(on ? `${x.nick} назначен ${ROLE_ACC[role]}.` + (role === 'member' ? '' : ' Панель появится у него после обновления страницы.') : `У ${x.nick} снята роль (${ROLE_ACC[role]}).`, 'good');
+    await logAudit({targetId:x.id, targetNick:x.nick, kind:'role', note:`${role}|${on ? 'on' : 'off'}`}); loadAudit();
   } catch(e){ toast('Не удалось изменить роль: ' + authError(e), 'bad'); }
 }
 /* --- журнал аудита --- */
@@ -947,14 +988,15 @@ function renderAudit(){
     if (r.kind === 'adjust') return `${A} ${r.delta > 0 ? 'выдал' : 'забрал у'} ${T}: ${d} ${c}`;
     if (r.kind === 'code') return `${T} получил по коду от ${A}: ${d} ${c}`;
     if (r.kind === 'item') return `${A} забрал у ${T} предмет: ${esc(r.note)}`;
-    if (r.kind === 'role') return `${A}: ${T} ${r.note === 'назначен' ? 'назначен заместителем' : 'больше не заместитель'}`;
+    if (r.kind === 'role'){ const [role, st] = r.note.includes('|') ? r.note.split('|') : ['deputy', r.note === 'назначен' ? 'on' : 'off'], nm = ROLE_ACC[role] || role;
+      return `${A}: ${T} ${st === 'on' ? 'назначен ' + nm : 'больше не ' + ({deputy:'заместитель', io:'лидер ИО', member:'член ИО'}[role] || role)}`; }
     return esc(r.kind);
   };
   $('audit-log').innerHTML = rows.slice(0,200).map(r => `<div><time>${tm(r.at)}</time>${line(r)}</div>`).join('') || '<em style="color:var(--muted)">Пусто</em>';
   $('audit-info').textContent = `Записей в журнале: ${rows.length}${rows.length >= 1000 ? ' (показаны последние 1000)' : ''}. «Получил» и «выдал» считаются по ним.`;
 }
 async function loadAccounts(){
-  try { allUsers = await Backend.listProfiles(); try { leaderIds = new Set(await Backend.listLeaders()); } catch(_){} renderSettings(); }
+  try { allUsers = await Backend.listProfiles(); try { leaderRoles = new Map((await Backend.listLeaders()).map(l => [l.id, l.role])); } catch(_){} try { memberIds = new Set(await Backend.listMembers()); } catch(_){} renderSettings(); }
   catch(e){ toast('Не удалось загрузить список аккаунтов: ' + authError(e), 'bad'); }
 }
 
@@ -986,7 +1028,7 @@ function go(page){
   closeHelp();
   if (page === 'menu') requestAnimationFrame(fitAvatar);
   renderAll();
-  if (page === 'settings' && isLeader(me())) { loadAccounts(); loadAudit(); }
+  if (page === 'settings' && canGive(me())) { loadAccounts(); loadAudit(); }
 }
 
 /* ================== ОТОБРАЖЕНИЕ ================== */
@@ -1001,9 +1043,9 @@ function renderAll(){
   setStat('st-points', u.points); setStat('st-merits', u.merits); setStat('st-rep', u.reputation || 0);
   $('cap-nick').textContent = u.nick; $('cap-rank').textContent = isVol(u) ? 'Волонтёр отряда «Восход»' : 'Ранг: ' + rankOf(u);
   $('acc-nick').textContent = u.nick; $('acc-rank').textContent = rankOf(u);
-  const role = isOwner(u) ? 'Лидер' : isLeader(u) ? 'Заместитель лидера' : '';
+  const role = isOwner(u) ? 'Лидер' : leaderFlag === 'deputy' ? 'Заместитель лидера' : leaderFlag === 'io' ? 'Лидер ИО' : memberFlag ? 'Член ИО' : '';
   $('acc-role').hidden = !role; $('acc-role-v').textContent = role;
-  $('skin-blue').classList.toggle('is-on', skin === 'blue'); $('skin-green').classList.toggle('is-on', skin === 'green');
+  
   if (!$('p-shop').hidden) renderShop();
   if (!$('p-rates').hidden) renderRates();
   if (!$('p-settings').hidden) renderSettings();
@@ -1056,7 +1098,7 @@ function renderShop(){
       <div class="body"><ul>${lis}</ul></div></details>`;
   }).join('');
   /* лидер */
-  $('leader').hidden = !isLeader(u);
+  $('leader').hidden = !canGive(u);
   renderHist();
   updateConvPrev();
 }
@@ -1112,6 +1154,7 @@ async function redeem(){
   try {
     const c = await Backend.getCode(code);
     if (!c || !c.amount) return toast('Код не подошёл. Проверьте, что вы ввели его без ошибок.', 'bad');
+    if (Array.isArray(c.allowed) && !c.allowed.includes(u.nick.toLowerCase())) return toast('Этот код выдан только участникам сбора. Вашего ника в списке нет.', 'bad');
     if (u.used.includes(code)) return;
     u.used.push(code);
     const kind = c.type === 0 ? 'merits' : 'points';
@@ -1124,19 +1167,26 @@ async function redeem(){
 }
 let lastCode = '';
 async function genCode(){
-  const u = me(); if (!isLeader(u)) return;
+  const u = me(); if (!canGive(u)) return;
   const amount = Math.min(999, Math.max(1, Math.floor(+$('g-amount').value || CONFIG.DEFAULT_REWARD))), type = +$('g-type').value;
+  const nicks = [...new Set($('g-nicks').value.split(/[\s,;]+/).map(x => x.trim()).filter(Boolean))];
+  if (!nicks.length) return toast('Впишите ники тех, кто был на сборе.', 'bad');
+  const bad = nicks.filter(n => !/^[A-Za-z0-9_]{3,20}$/.test(n));
+  if (bad.length) return toast('Неверный ник: ' + bad[0] + '. Ники пишите латиницей, через запятую или с новой строки.', 'bad');
+  const known = new Set(allUsers.map(x => String(x.nick).toLowerCase()));
+  const unknown = allUsers.length ? nicks.filter(n => !known.has(n.toLowerCase())) : [];
   let code = ''; for (let i = 0; i < 8; i++) code += ALPH[rnd(32)];
-  try { await Backend.createCode(code, {type, amount, issuerId:uid, issuerNick:u.nick, at:Date.now()}); }
+  try { await Backend.createCode(code, {type, amount, issuerId:uid, issuerNick:u.nick, at:Date.now(), allowed:nicks.map(n => n.toLowerCase())}); }
   catch(e){ return toast('Не удалось создать код: ' + authError(e), 'bad'); }
   lastCode = code;
-  u.made.unshift({code, type, amount, at:Date.now()}); u.made = u.made.slice(0,8); save();
+  u.made.unshift({code, type, amount, at:Date.now(), n:nicks.length}); u.made = u.made.slice(0,8); save();
   $('gen-out').hidden = false; $('gen-out').textContent = '#' + code; $('copy-btn').hidden = false; renderHist();
+  if (unknown.length) toast('Код создан. Этих ников нет среди аккаунтов: ' + unknown.join(', ') + '. Проверьте написание.');
 }
 function renderHist(){
   const u = me(); if (!u) return;
   $('gen-hist').innerHTML = u.made.length ? '<b style="color:var(--mist)">Последние коды</b>' + u.made.map(m =>
-    `<div>#${m.code} — ${m.amount} ${m.type===0?'заслуг':'очков'}, ${new Date(m.at).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>`).join('') : '';
+    `<div>#${m.code} — ${m.amount} ${m.type===0?'заслуг':'очков'}${m.n ? ', ников: ' + m.n : ''}, ${new Date(m.at).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>`).join('') : '';
 }
 async function copyCode(){
   const txt = '#' + lastCode;
@@ -1154,7 +1204,8 @@ document.addEventListener('pointerdown', e => { if (!$('help').hidden && !e.targ
 const TRACKS = [
   {id:'revengeance', title:'revengeance', src:'music/revengeance.mp3'},
   {id:'standby', title:'stand by', src:'music/stand-by.mp3'},
-  {id:'gta', title:'main menu', src:'music/gta-pause-menu.mp3'}
+  {id:'gta', title:'main menu', src:'music/gta-pause-menu.mp3'},
+  {id:'cavalry', title:'old cavalry', src:'music/old-cavalry.mp3'}
 ];
 const audio = new Audio(); audio.loop = true; audio.preload = 'none';
 let curTrack = '', pending = false;
@@ -1177,20 +1228,24 @@ function renderSettings(){
   $('mus-vol').value = Math.round(m.vol*100); $('mus-vol').style.setProperty('--p', Math.round(m.vol*100)+'%'); $('vol-out').textContent = Math.round(m.vol*100)+'%';
   $('now-title').textContent = t ? t.title : 'Не выбрано';
   $('now-sub').textContent = !t ? 'Выберите файл ниже' : m.off ? 'Музыка выключена' : 'Играет по кругу';
-  $('acc-box').hidden = !isLeader(u); $('audit-box').hidden = !isLeader(u);
-  if (isLeader(u)) $('acc-rows').innerHTML = allUsers.slice().sort((a,b)=>(b.level||0)-(a.level||0)||String(a.nick).localeCompare(String(b.nick))).map(x =>
-    `<tr class="pick ${x.id===selUser?'sel':''}" data-act="acc-pick" data-id="${esc(x.id||'')}"><td class="n">${esc(x.nick)}${CONFIG.LEADERS.some(n => n.toLowerCase() === String(x.nick).toLowerCase()) ? ' <span class="tag ok">лидер</span>' : leaderIds.has(x.id) ? ' <span class="tag ok">заместитель</span>' : ''}</td><td>${isVol(x) ? 'Волонтёр' : RANKS[x.level||0]}</td><td>${isVol(x) ? '—' : x.points||0}</td><td>${isVol(x) ? '—' : x.merits||0}</td><td>${isVol(x) ? (x.reputation||0) : '—'}</td></tr>`).join('');
+  $('acc-box').hidden = !canGive(u); $('audit-box').hidden = !isLeader(u);
+  if (canGive(u)) $('acc-rows').innerHTML = allUsers.slice().sort((a,b)=>(b.level||0)-(a.level||0)||String(a.nick).localeCompare(String(b.nick))).map(x =>
+    `<tr class="pick ${x.id===selUser?'sel':''}" data-act="acc-pick" data-id="${esc(x.id||'')}"><td class="n">${esc(x.nick)}${roleTag(x.id) ? ` <span class="tag ok">${roleTag(x.id)}</span>` : ''}</td><td>${isVol(x) ? 'Волонтёр' : RANKS[x.level||0]}</td><td>${isVol(x) ? '—' : x.points||0}</td><td>${isVol(x) ? '—' : x.merits||0}</td><td>${isVol(x) ? (x.reputation||0) : '—'}</td></tr>`).join('');
   const sel = allUsers.find(x => x.id === selUser);
-  $('adj').hidden = !(isLeader(u) && sel);
+  $('adj').hidden = !(canGive(u) && sel);
   if (sel) {
     $('adj-nick').textContent = sel.nick; $('adj-vals').textContent = isVol(sel) ? `репутация ${sel.reputation||0} / ${CONFIG.REP_MAX}` : `очки ${sel.points||0}, заслуги ${sel.merits||0}`;
-    $('adj-pl').hidden = isVol(sel); $('adj-vol').hidden = !isVol(sel); $('adj-items-wrap').hidden = isVol(sel);
+    const full = isLeader(u), owner = isOwner(u);
+    $('adj-pl').hidden = isVol(sel); $('adj-vol').hidden = !isVol(sel) || !full; $('adj-items-wrap').hidden = isVol(sel) || !full;
+    document.querySelectorAll('#adj-pl [data-full]').forEach(b => { b.hidden = !full; });
     const items = (sel.extra || []).filter(id => ITEM[id]);
     $('adj-items').innerHTML = items.length ? items.map(id => `<button class="chip" type="button" data-act="rm-item" data-id="${id}" title="Забрать предмет">${esc(ITEM[id].n)} ✕</button>`).join('') : '<em>нет</em>';
-    const selOwner = CONFIG.LEADERS.some(n => n.toLowerCase() === String(sel.nick).toLowerCase()), lead = leaderIds.has(sel.id);
-    $('adj-lead-wrap').hidden = !isOwner(u);
-    $('adj-lead').textContent = selOwner ? 'Лидер' : lead ? 'Снять заместителя' : 'Назначить заместителем';
-    $('adj-lead').disabled = selOwner;
+    const selOwner = CONFIG.LEADERS.some(n => n.toLowerCase() === String(sel.nick).toLowerCase()), lr = leaderRoles.get(sel.id);
+    $('adj-lead-wrap').hidden = selOwner;
+    $('adj-lead').hidden = !owner; $('adj-iolead').hidden = !owner;
+    $('adj-lead').textContent = lr === 'deputy' ? 'Снять заместителя' : 'Назначить заместителем';
+    $('adj-iolead').textContent = lr === 'io' ? 'Снять лидера ИО' : 'Назначить лидером ИО';
+    $('adj-member').textContent = memberIds.has(sel.id) ? 'Снять члена ИО' : 'Назначить членом ИО';
   }
   $('tracks').innerHTML = TRACKS.map(x => {
     const on = m.track === x.id;
@@ -1386,7 +1441,7 @@ document.addEventListener('click', e => {
   else if (a === 'skin') pickSkin(b.dataset.skin);
   else if (a === 'audit-refresh') loadAudit();
   else if (a === 'rm-item') removeItem(b.dataset.id);
-  else if (a === 'toggle-lead') toggleLeader();
+  else if (a === 'role') toggleRole(b.dataset.role);
   else if (a === 'logout'){ flushSave().finally(() => Backend.logout()); }
 });
 $('code-in').addEventListener('keydown', e => { if (e.key === 'Enter') redeem(); });
