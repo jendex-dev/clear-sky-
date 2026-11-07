@@ -67,6 +67,12 @@ service cloud.firestore {
         && request.resource.data.allowed is list && request.resource.data.allowed.size() > 0;
     }
 
+    // главный приказ: читают все вошедшие, пишет только владелец сайта
+    match /orders/{id} {
+      allow read: if signedIn();
+      allow write: if isOwner();
+    }
+
     // журнал аудита: читает только лидер/заместитель (лидер ИО только пишет), записи не меняются
     match /audit/{entryId} {
       allow read: if isLeader();

@@ -335,6 +335,37 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
 .audit-log time{color:var(--muted);margin-right:8px;font-variant-numeric:tabular-nums}
 .pos{color:var(--ok)}.neg{color:var(--bad)}
 
+/* --- Главный приказ --- */
+#p-order{display:flex;flex-direction:column;max-width:860px;overflow:auto}
+.ord-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--line)}
+.ord-ends{display:flex;align-items:center;gap:10px;font-family:var(--f-display);letter-spacing:.07em;text-transform:uppercase;font-size:15px;color:var(--muted)}
+.ord-ends b{background:var(--merit);color:#14110a;padding:4px 12px;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.ord-ends b.over{background:var(--bad);color:#fff}
+.ord-kind{display:flex;align-items:center;gap:12px;font-family:var(--f-display);font-size:30px;letter-spacing:.08em;text-transform:uppercase}
+.ord-kind svg{width:38px;height:38px;color:var(--merit)}
+.ord-body{padding:18px 20px 22px;display:grid;gap:16px}
+.ord-title{margin:0;font-family:var(--f-display);font-weight:500;font-size:26px;letter-spacing:.05em;text-transform:uppercase;color:#fff}
+.ord-desc{margin:0;padding:14px 16px;background:rgba(var(--steel-rgb),.16);border-left:3px solid var(--ice);color:var(--soft);white-space:pre-wrap;line-height:1.55}
+.ord-task{display:grid;gap:6px}
+.ord-task .row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:17px;font-weight:500}
+.ord-task .row em{font-style:normal;color:var(--merit);font-weight:600;font-family:var(--f-display);letter-spacing:.04em;margin-left:6px}
+.ord-box{width:22px;height:22px;flex:none;border:2px solid var(--line);display:grid;place-items:center;color:var(--ok);font-size:16px;line-height:1}
+.ord-task.done .ord-box{border-color:var(--ok)}
+.ord-task.done .row{color:var(--ok)}
+.ord-bar{position:relative;height:30px;background:rgba(0,0,0,.65);border:1px solid var(--line);overflow:hidden}
+.ord-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(var(--steel-rgb),.9),var(--ice));transition:width .6s ease}
+.ord-task.done .ord-bar i{background:linear-gradient(90deg,#1f9e5c,var(--ok))}
+.ord-bar span{position:relative;display:block;padding:4px 12px;font-family:var(--f-display);letter-spacing:.05em;font-size:16px;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000}
+.ord-reward{display:flex;align-items:center;gap:14px;padding:12px 16px;border:1px solid rgba(233,200,90,.45);background:rgba(233,200,90,.07)}
+.ord-reward small{display:block;font-family:var(--f-display);letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:#b39b45}
+.ord-reward div{font-family:var(--f-display);font-size:22px;letter-spacing:.04em;color:var(--merit)}
+.ord-empty{padding:36px 20px;text-align:center;color:var(--muted);display:grid;gap:14px;justify-items:center}
+.ord-form{display:grid;gap:14px}
+.ord-form textarea{min-height:96px}
+.ord-trow{display:grid;grid-template-columns:minmax(0,1fr) 110px 110px auto;gap:8px;align-items:end}
+.ord-trow .field{margin:0}
+.ord-note{font-size:12.5px;color:var(--muted)}
+@media (max-width:860px){.ord-trow{grid-template-columns:1fr 1fr}.ord-trow .field:first-child{grid-column:1/-1}nav.side{flex-wrap:wrap}nav.side .plate{width:auto;flex:1 1 40%}}
 #toasts{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:50;display:grid;gap:8px;justify-items:end;pointer-events:none}
 .toast{padding:12px 18px;background:rgba(var(--ink-rgb),.97);border:1px solid var(--ice);box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:min(420px,90vw);animation:rise .3s ease both}
 .toast.bad{border-color:var(--bad)}.toast.good{border-color:var(--ok)}
@@ -438,6 +469,7 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
     <button class="plate is-active" type="button" data-act="nav" data-page="menu">Меню</button>
     <button class="plate" type="button" data-act="nav" data-page="shop" data-for="player">Магазин</button>
     <button class="plate" type="button" data-act="nav" data-page="rates" data-for="volunteer" hidden>Расценки</button>
+    <button class="plate" type="button" data-act="nav" data-page="order">Главный приказ</button>
     <button class="plate" type="button" data-act="nav" data-page="settings">Настройки</button>
   </nav>
 
@@ -511,6 +543,18 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
             <small>1 заслуга = 15 очков. 25 очков = 1 заслуга.</small>
           </div>
         </div>
+      </article>
+    </section>
+
+    <!-- Главный приказ -->
+    <section class="page" id="p-order" hidden>
+      <article class="box card">
+        <div class="ord-head">
+          <div class="ord-kind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.6" fill="currentColor"/></svg>Главный приказ</div>
+          <div class="ord-ends" id="ord-ends" hidden>Осталось: <b id="ord-left">—</b></div>
+        </div>
+        <div class="ord-body" id="ord-view"></div>
+        <form class="ord-body ord-form" id="ord-form" hidden autocomplete="off"></form>
       </article>
     </section>
 
@@ -734,6 +778,10 @@ const FirebaseBackend = {
     const ref = this.fs.collection('users').doc(id), max = kind === 'reputation' ? CONFIG.REP_MAX : Infinity;
     return this.fs.runTransaction(async t => { const sn = await t.get(ref); const v = Math.min(max, Math.max(0, ((sn.data() || {})[kind] || 0) + delta)); t.update(ref, {[kind]: v}); return v; });
   },
+  async getOrder(){ const s = await this.fs.collection('orders').doc('main').get(); return s.exists ? s.data() : null; },
+  setOrder(data){ return this.fs.collection('orders').doc('main').set(data); },
+  clearOrder(){ return this.fs.collection('orders').doc('main').delete(); },
+  watchOrder(cb){ return this.fs.collection('orders').doc('main').onSnapshot(s => cb(s.exists ? s.data() : null), () => {}); },
   createCode(code, data){ return this.fs.collection('codes').doc(code).set(data); },
   async getCode(code){ const s = await this.fs.collection('codes').doc(code).get(); return s.exists ? s.data() : null; },
   addAudit(e){ return this.fs.collection('audit').add(e); },
@@ -887,6 +935,7 @@ $('auth-form').addEventListener('submit', async e => {
 
 function showAuth(){ $('boot').hidden = true; $('app').hidden = true; $('auth').hidden = false; setAuthMode('login'); }
 let auditRows = [];
+let order = null, unwatchOrder = null, ordEditing = false, ordDraft = null;
 
 async function startSession(id, fresh){
   if (starting || (cur && uid === id)) return;
@@ -899,6 +948,7 @@ async function startSession(id, fresh){
     clothCache.shirt = s || ''; clothCache.pants = pn || '';
     leaderFlag = await Backend.leaderRole(id).catch(() => ''); memberFlag = await Backend.isMember(id).catch(() => false);
     if (unwatch) unwatch(); unwatch = Backend.watchProfile(id, onRemote);
+    if (unwatchOrder) unwatchOrder(); order = null; unwatchOrder = Backend.watchOrder(o => { order = o; if (!ordEditing) renderOrder(); });
     $('a-pass').value = $('a-pass2').value = '';
     enterApp(fresh);
   } catch(e){
@@ -912,7 +962,7 @@ function onRemote(data){
   cur = normalize(Object.assign({}, cur, data)); if (cur.theme !== skin) setSkin(cur.theme); renderAll(); refreshOutfit();
 }
 function endSession(){
-  cur = null; uid = null; allUsers = []; leaderFlag = ''; memberFlag = false; leaderRoles = new Map(); memberIds = new Set(); selUser = ''; auditRows = []; if (unwatch) unwatch(); unwatch = null;
+  cur = null; uid = null; allUsers = []; leaderFlag = ''; memberFlag = false; leaderRoles = new Map(); memberIds = new Set(); selUser = ''; auditRows = []; if (unwatch) unwatch(); unwatch = null; if (unwatchOrder) unwatchOrder(); unwatchOrder = null; order = null; ordEditing = false;
   clothCache.shirt = clothCache.pants = '';
   audio.pause(); curTrack = ''; document.body.classList.remove('playing');
   setSkin('blue'); showAuth();
@@ -987,6 +1037,7 @@ function renderAudit(){
     const A = `<b>${esc(r.actorNick)}</b>`, T = `<b>${esc(r.targetNick)}</b>`, d = r.delta > 0 ? '+' + r.delta : r.delta, c = CUR_NAME[r.cur] || '';
     if (r.kind === 'adjust') return `${A} ${r.delta > 0 ? 'выдал' : 'забрал у'} ${T}: ${d} ${c}`;
     if (r.kind === 'code') return `${T} получил по коду от ${A}: ${d} ${c}`;
+    if (r.kind === 'order') return `${A} изменил главный приказ: «${esc(r.note)}»`;
     if (r.kind === 'item') return `${A} забрал у ${T} предмет: ${esc(r.note)}`;
     if (r.kind === 'role'){ const [role, st] = r.note.includes('|') ? r.note.split('|') : ['deputy', r.note === 'назначен' ? 'on' : 'off'], nm = ROLE_ACC[role] || role;
       return `${A}: ${T} ${st === 'on' ? 'назначен ' + nm : 'больше не ' + ({deputy:'заместитель', io:'лидер ИО', member:'член ИО'}[role] || role)}`; }
@@ -1024,8 +1075,9 @@ function go(page){
   if (isVol(me()) && page === 'shop') page = 'rates';
   if (!isVol(me()) && page === 'rates') page = 'menu';
   document.querySelectorAll('nav.side .plate').forEach(b => b.classList.toggle('is-active', b.dataset.page === page));
-  ['menu','shop','rates','settings'].forEach(p => { $('p-'+p).hidden = p !== page; });
+  ['menu','shop','rates','order','settings'].forEach(p => { $('p-'+p).hidden = p !== page; });
   closeHelp();
+  if (page === 'order') renderOrder();
   if (page === 'menu') requestAnimationFrame(fitAvatar);
   renderAll();
   if (page === 'settings' && canGive(me())) { loadAccounts(); loadAudit(); }
@@ -1051,6 +1103,75 @@ function renderAll(){
   if (!$('p-settings').hidden) renderSettings();
 }
 
+/* ================== ГЛАВНЫЙ ПРИКАЗ ================== */
+const fmtLeft = ms => { if (ms <= 0) return 'Срок вышел'; const d = Math.floor(ms/864e5), h = Math.floor(ms%864e5/36e5), m = Math.floor(ms%36e5/6e4); return d ? `${d}Д ${h}Ч` : `${h}Ч ${m}М`; };
+const blankOrder = () => ({title:'', desc:'', tasks:[{t:'', goal:100, done:0}], reward:'', endsAt:0});
+function renderOrder(){
+  const u = me(); if (!u || $('p-order').hidden) return;
+  const own = isOwner(u), o = order;
+  $('ord-form').hidden = !ordEditing; $('ord-view').hidden = ordEditing;
+  if (ordEditing) { renderOrderForm(); return; }
+  const left = o && o.endsAt ? o.endsAt - Date.now() : null;
+  $('ord-ends').hidden = left === null;
+  if (left !== null){ $('ord-left').textContent = fmtLeft(left); $('ord-left').classList.toggle('over', left <= 0); }
+  const edit = own ? `<button class="btn" type="button" data-act="ord-edit">${o ? 'Изменить приказ' : 'Создать приказ'}</button>` : '';
+  if (!o){ $('ord-view').innerHTML = `<div class="ord-empty"><div>Сейчас действующего приказа нет. Загляните позже.</div>${edit}</div>`; return; }
+  const tasks = (o.tasks || []).map(t => {
+    const goal = Math.max(1, t.goal || 1), done = Math.max(0, t.done || 0), pct = Math.min(100, done / goal * 100), ok = done >= goal;
+    return `<div class="ord-task ${ok?'done':''}"><div class="row"><span>${esc(t.t)}<em>${goal.toLocaleString('ru-RU')}</em></span><span class="ord-box">${ok?'✓':''}</span></div>
+      <div class="ord-bar"><i style="width:${pct}%"></i><span>${done.toLocaleString('ru-RU')} (${pct.toFixed(1)}%)</span></div></div>`;
+  }).join('');
+  $('ord-view').innerHTML = `${o.title ? `<h2 class="ord-title">${esc(o.title)}</h2>` : ''}
+    ${o.desc ? `<p class="ord-desc">${esc(o.desc)}</p>` : ''}${tasks}
+    ${o.reward ? `<div class="ord-reward"><div><small>Награда</small>${esc(o.reward)}</div></div>` : ''}
+    ${o.updatedAt ? `<div class="ord-note">Обновлено: ${new Date(o.updatedAt).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}${o.updatedBy ? ', ' + esc(o.updatedBy) : ''}</div>` : ''}${edit}`;
+}
+setInterval(() => { if (cur && !ordEditing && !$('p-order').hidden) renderOrder(); }, 30000);
+const toLocalInput = ms => { if (!ms) return ''; const d = new Date(ms - new Date(ms).getTimezoneOffset()*6e4); return d.toISOString().slice(0,16); };
+function renderOrderForm(){
+  const d = ordDraft;
+  $('ord-form').innerHTML = `
+    <div class="field"><label for="of-title">Заголовок</label><input type="text" id="of-title" maxlength="120" value="${esc(d.title)}" placeholder="Например, Зачистка периметра"></div>
+    <div class="field"><label for="of-desc">Описание приказа</label><textarea id="of-desc" maxlength="1500" placeholder="Что нужно сделать и зачем">${esc(d.desc)}</textarea></div>
+    <div class="field"><label>Задачи</label>${d.tasks.map((t,i) => `
+      <div class="ord-trow" style="margin-bottom:8px">
+        <div class="field"><label for="ot-t${i}">Что сделать</label><input type="text" id="ot-t${i}" data-i="${i}" data-f="t" maxlength="120" value="${esc(t.t)}" placeholder="Например, Сдать артефактов"></div>
+        <div class="field"><label for="ot-g${i}">Нужно</label><input type="number" id="ot-g${i}" data-i="${i}" data-f="goal" min="1" max="1000000000" value="${t.goal}"></div>
+        <div class="field"><label for="ot-d${i}">Выполнено</label><input type="number" id="ot-d${i}" data-i="${i}" data-f="done" min="0" max="1000000000" value="${t.done}"></div>
+        <button class="btn btn-sm btn-danger" type="button" data-act="ord-del" data-i="${i}" aria-label="Убрать задачу">✕</button>
+      </div>`).join('')}
+      <div><button class="btn btn-sm" type="button" data-act="ord-add">Добавить задачу</button></div></div>
+    <div class="field"><label for="of-reward">Награда</label><input type="text" id="of-reward" maxlength="120" value="${esc(d.reward)}" placeholder="Например, 5 заслуг каждому участнику"></div>
+    <div class="field"><label for="of-end">Срок выполнения</label><input type="datetime-local" id="of-end" value="${toLocalInput(d.endsAt)}"><span class="ord-note">Оставьте пустым, если срока нет.</span></div>
+    <p class="err" id="of-err" role="alert"></p>
+    <div class="acc-actions"><button class="btn btn-ok" style="width:auto" type="submit">Опубликовать приказ</button>
+      <button class="btn" type="button" data-act="ord-cancel">Отмена</button>
+      ${order ? '<button class="btn btn-danger" type="button" data-act="ord-clear">Снять приказ</button>' : ''}</div>`;
+}
+function openOrderEdit(){ if (!isOwner(me())) return; ordDraft = JSON.parse(JSON.stringify(order || blankOrder())); if (!ordDraft.tasks.length) ordDraft.tasks.push({t:'', goal:100, done:0}); ordEditing = true; renderOrder(); }
+$('ord-form').addEventListener('input', e => {
+  const el = e.target, d = ordDraft; if (!d) return;
+  if (el.id === 'of-title') d.title = el.value; else if (el.id === 'of-desc') d.desc = el.value; else if (el.id === 'of-reward') d.reward = el.value;
+  else if (el.id === 'of-end') d.endsAt = el.value ? new Date(el.value).getTime() || 0 : 0;
+  else if (el.dataset.i !== undefined){ const t = d.tasks[+el.dataset.i]; if (t) t[el.dataset.f] = el.dataset.f === 't' ? el.value : Math.max(0, Math.floor(+el.value || 0)); }
+});
+$('ord-form').addEventListener('submit', async e => {
+  e.preventDefault(); if (!isOwner(me())) return;
+  const d = ordDraft, err = $('of-err'); err.textContent = '';
+  const tasks = d.tasks.filter(t => String(t.t).trim()).map(t => ({t:String(t.t).trim(), goal:Math.max(1, t.goal || 1), done:Math.max(0, t.done || 0)}));
+  if (!d.title.trim() && !d.desc.trim() && !tasks.length) { err.textContent = 'Заполните заголовок, описание или хотя бы одну задачу.'; return; }
+  const data = {title:d.title.trim(), desc:d.desc.trim(), tasks, reward:d.reward.trim(), endsAt:d.endsAt || 0, updatedAt:Date.now(), updatedBy:me().nick};
+  try {
+    await Backend.setOrder(data); order = data; ordEditing = false; ordDraft = null; renderOrder(); toast('Приказ опубликован.', 'good');
+    await logAudit({kind:'order', note:data.title || 'без заголовка'});
+  } catch(e2){ err.textContent = 'Не удалось сохранить: ' + authError(e2); }
+});
+let clearArmed = 0;
+async function clearOrder(){
+  if (!isOwner(me())) return;
+  try { await Backend.clearOrder(); order = null; ordEditing = false; ordDraft = null; renderOrder(); toast('Приказ снят.', 'good'); await logAudit({kind:'order', note:'приказ снят'}); }
+  catch(e){ toast('Не удалось снять приказ: ' + authError(e), 'bad'); }
+}
 function renderRates(){
   const u = me(), n = u.reputation || 0, max = CONFIG.REP_MAX;
   $('rt-n').textContent = n; $('rt-bar').style.width = Math.min(100, n / max * 100) + '%';
@@ -1434,6 +1555,14 @@ document.addEventListener('click', e => {
   else if (a === 'del-go') deleteAccount();
   else if (a === 'cloth-pick') $('file-' + b.dataset.kind).click();
   else if (a === 'cloth-reset'){ setCustom(b.dataset.kind, '').then(() => { refreshOutfit(); toast('Возвращена форма по рангу.'); }); }
+  else if (a === 'ord-edit') openOrderEdit();
+  else if (a === 'ord-cancel'){ ordEditing = false; ordDraft = null; renderOrder(); }
+  else if (a === 'ord-add'){ ordDraft.tasks.push({t:'', goal:100, done:0}); renderOrderForm(); }
+  else if (a === 'ord-del'){ ordDraft.tasks.splice(+b.dataset.i, 1); renderOrderForm(); }
+  else if (a === 'ord-clear'){
+    if (Date.now() - clearArmed > 4000){ clearArmed = Date.now(); b.textContent = 'Нажмите ещё раз, чтобы снять'; return; }
+    clearOrder();
+  }
   else if (a === 'acc-refresh') loadAccounts();
   else if (a === 'acc-pick'){ selUser = b.dataset.id; renderSettings(); }
   else if (a === 'adj') adjust(b.dataset.k, +b.dataset.s);
