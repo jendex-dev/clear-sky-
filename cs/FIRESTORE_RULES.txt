@@ -67,6 +67,12 @@ service cloud.firestore {
         && request.resource.data.allowed is list && request.resource.data.allowed.size() > 0;
     }
 
+    // настройки сайта (конструктор): читают все, меняет только владелец
+    match /config/{id} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+
     // главный приказ: читают все вошедшие, пишет только владелец сайта
     match /orders/{id} {
       allow read: if signedIn();

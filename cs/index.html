@@ -366,6 +366,23 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
 .ord-trow .field{margin:0}
 .ord-note{font-size:12.5px;color:var(--muted)}
 @media (max-width:860px){.ord-trow{grid-template-columns:1fr 1fr}.ord-trow .field:first-child{grid-column:1/-1}nav.side{flex-wrap:wrap}nav.side .plate{width:auto;flex:1 1 40%}}
+#p-builder{display:flex;flex-direction:column;max-width:980px;overflow:auto}
+.bsec{display:grid;gap:12px;padding:16px;border:1px solid rgba(var(--ice-rgb),.14);background:rgba(var(--deep-rgb),.45)}
+.bsec>h3{margin:0;font-family:var(--f-display);font-weight:500;letter-spacing:.07em;text-transform:uppercase;font-size:19px;color:var(--ice)}
+.bsec small{color:var(--muted);font-size:12.5px}
+.brow{display:grid;gap:8px;align-items:end}
+.brow .field{margin:0}
+.brow.items{grid-template-columns:minmax(150px,1.6fr) 80px 120px 110px 120px minmax(110px,1fr) auto auto}
+.brow.rates{grid-template-columns:100px minmax(0,1fr) auto}
+.brow.grid4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.brow.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.brow.grid2{grid-template-columns:1fr 1fr}
+.bchk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mist);white-space:nowrap;padding-bottom:10px}
+.bchk input{width:auto}
+.bpack{display:grid;gap:8px;padding:12px;border:1px dashed rgba(var(--ice-rgb),.2)}
+@media (max-width:1100px){.brow.items{grid-template-columns:1fr 1fr}.brow.items .field:first-child{grid-column:1/-1}.brow.grid4{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.brow.grid3,.brow.grid2{grid-template-columns:1fr}}
+select{appearance:auto}
 #toasts{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:50;display:grid;gap:8px;justify-items:end;pointer-events:none}
 .toast{padding:12px 18px;background:rgba(var(--ink-rgb),.97);border:1px solid var(--ice);box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:min(420px,90vw);animation:rise .3s ease both}
 .toast.bad{border-color:var(--bad)}.toast.good{border-color:var(--ok)}
@@ -414,8 +431,8 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
       <g class="e-ice" stroke-width="2" stroke-linecap="round"><path d="M50 12v9M50 79v9M12 50h9M79 50h9M23 23l6 6M71 71l6 6M77 23l-6 6M29 71l-6 6"/></g>
       <path d="M26 60c0-8 6-13 13-13 3-8 10-12 18-12 10 0 17 7 18 15 6 1 10 6 10 11 0 7-5 11-11 11H35c-5 0-9-5-9-12z" transform="translate(-6 -2) scale(.95)" class="e-ice e-fill" stroke-width="2.5" stroke-linejoin="round"/>
     </svg>
-    <h1 class="auth-title">Чистое Небо</h1>
-    <p class="auth-sub">Портал фракции</p>
+    <h1 class="auth-title" data-brand="name">Чистое Небо</h1>
+    <p class="auth-sub" data-brand="sub">Портал фракции</p>
     <div class="tabs" role="tablist">
       <button class="plate is-active" id="tab-login" type="button" data-act="auth-tab" data-mode="login" role="tab">Вход</button>
       <button class="plate" id="tab-reg" type="button" data-act="auth-tab" data-mode="reg" role="tab">Регистрация</button>
@@ -437,27 +454,27 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
 <div id="app" hidden>
   <header class="top">
     <div class="brand">
-      <h1>Чистое Небо</h1>
+      <h1 data-brand="name">Чистое Небо</h1>
       <p><span id="who-lbl">Боец</span>: <b id="who">—</b></p>
     </div>
     <div class="stats">
       <div class="stat" data-for="player"><span>Очки:</span><strong id="st-points">0</strong></div>
       <div class="stat merit" data-for="player"><span>Заслуги:</span><strong id="st-merits">0</strong></div>
-      <div class="stat rep" data-for="volunteer" hidden><span>Репутация:</span><strong id="st-rep">0</strong><span id="st-rep-max">/ 2000</span></div>
+      <div class="stat rep" data-for="volunteer" hidden><span>Репутация:</span><strong id="st-rep">0</strong><span id="st-rep-max">/ <span data-v="max">2000</span></span></div>
       <button class="help-btn" id="help-btn" type="button" data-act="help" aria-expanded="false" aria-controls="help" aria-label="Справка о валюте">?</button>
       <div id="help" hidden role="dialog" aria-label="Справка">
        <div id="help-vol" hidden>
         <h3>Репутация</h3>
-        <p>Отдельная валюта добровольцев отряда «Восход». Начинается с 0, максимум 2000. Репутация выдаётся лидером или заместителем: +25 за каждое выполненное задание или активную помощь.</p>
+        <p>Отдельная валюта добровольцев отряда «Восход». Начинается с 0, максимум <span data-v="max">2000</span>. Репутация выдаётся лидером или заместителем: +<span data-v="step">25</span> за каждое выполненное задание или активную помощь.</p>
         <p>Накопленную репутацию можно обменять на излишки склада, артефакты и допуск к боевым зонам. Полный список — на странице «Расценки».</p>
        </div>
        <div id="help-pl">
         <h3>Заслуги</h3>
         <p>Валюта, за которую вы можете приобретать стандартные паки снаряжения. Заслуги выдаются лишь за выполнение целей, поставленных на сбор (то бишь за выполнение работы заслуги не даются, за редкими исключениями). Заслуги можно конвертировать в очки. Заслуги передавать, продавать или покупать у других НЕЛЬЗЯ.</p>
-        <p>Курс заслуг к очкам:<br><span class="rate">1 заслуга = 15 очков</span></p>
+        <p>Курс заслуг к очкам:<br><span class="rate">1 заслуга = <span data-v="m2p">15</span> очков</span></p>
         <h3>Очки</h3>
         <p>Валюта, которую вы получаете за выполнение той или иной работы. Очки не выдаются за сборы, но могут быть конвертированы в заслуги. Очки можно тратить лишь на нестандартные вещи.</p>
-        <p>Курс очков к заслугам:<br><span class="rate">25 очков = 1 заслуга</span></p>
+        <p>Курс очков к заслугам:<br><span class="rate"><span data-v="p2m">25</span> очков = 1 заслуга</span></p>
         <h3>Паки снаряжения</h3>
         <p>Стандартные паки, которые покупаются за заслуги. В этих паках лежит основное снаряжение, необходимое тому или иному рангу. Вещи, которые не входят в эти паки, вы можете докупать за очки, если ваш ранг это позволяет. Все эти паки вы обязаны покупать по очереди, то бишь с новичка на мастера просто накопив проскочить не получится.</p>
        </div>
@@ -470,6 +487,7 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
     <button class="plate" type="button" data-act="nav" data-page="shop" data-for="player">Магазин</button>
     <button class="plate" type="button" data-act="nav" data-page="rates" data-for="volunteer" hidden>Расценки</button>
     <button class="plate" type="button" data-act="nav" data-page="order">Главный приказ</button>
+    <button class="plate" type="button" data-act="nav" data-page="builder" id="nav-builder" hidden>Конструктор</button>
     <button class="plate" type="button" data-act="nav" data-page="settings">Настройки</button>
   </nav>
 
@@ -540,7 +558,7 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
               <button class="btn btn-sm" type="button" data-act="conv-up">Заслуги в очки</button>
               <button class="btn btn-sm" type="button" data-act="conv-down">Очки в заслуги</button>
             </div>
-            <small>1 заслуга = 15 очков. 25 очков = 1 заслуга.</small>
+            <small>1 заслуга = <span data-v="m2p">15</span> очков. <span data-v="p2m">25</span> очков = 1 заслуга.</small>
           </div>
         </div>
       </article>
@@ -558,16 +576,26 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
       </article>
     </section>
 
+    <!-- Конструктор (владелец) -->
+    <section class="page" id="p-builder" hidden>
+      <article class="box card">
+        <div class="ord-head"><div class="ord-kind">Конструктор</div>
+          <div class="acc-actions"><button class="btn btn-ok" style="width:auto;font-size:16px;padding:9px 18px" type="button" data-act="b-save">Сохранить</button>
+          <button class="btn btn-danger" type="button" data-act="b-reset" id="b-reset">Сбросить к стандартным</button></div></div>
+        <form class="ord-body" id="b-form" autocomplete="off" onsubmit="return false"></form>
+      </article>
+    </section>
+
     <!-- Расценки (волонтёры) -->
     <section class="page" id="p-rates" hidden>
       <article class="box card">
         <div class="rates-top">
-          <div class="big"><span id="rt-n">0</span> <span>/ 2000 репутации</span></div>
+          <div class="big"><span id="rt-n">0</span> <span>/ <span data-v="max">2000</span> репутации</span></div>
           <div class="bar"><i id="rt-bar"></i></div>
           <div id="rt-next" style="color:var(--mist);font-size:14px"></div>
         </div>
         <div class="scroll" id="rt-list"></div>
-        <div class="rate-note">Репутация начинается с 0, максимум 2000. +25 репутации за каждое выполненное задание или активную помощь. Выдаёт лидер или заместитель.</div>
+        <div class="rate-note">Репутация начинается с 0, максимум <span data-v="max">2000</span>. +<span data-v="step">25</span> репутации за каждое выполненное задание или активную помощь. Выдаёт лидер или заместитель.</div>
       </article>
     </section>
 
@@ -636,7 +664,7 @@ body.playing .eq i:nth-child(4){animation-delay:-.15s}body.playing .eq i:nth-chi
             <button class="btn btn-sm btn-danger" data-full type="button" data-act="adj" data-k="merits" data-s="-1">− заслуги</button>
             </span>
             <span id="adj-vol" class="adj-row" style="gap:8px" hidden>
-            <button class="btn btn-sm" type="button" data-act="adj-rep25">+25 репутации</button>
+            <button class="btn btn-sm" type="button" data-act="adj-rep25">+<span data-v="step">25</span> репутации</button>
             <button class="btn btn-sm" type="button" data-act="adj" data-k="reputation" data-s="1">+ репутация</button>
             <button class="btn btn-sm btn-danger" type="button" data-act="adj" data-k="reputation" data-s="-1">− репутация</button>
             </span>
@@ -689,8 +717,8 @@ const CONFIG = {
 };
 
 /* ================== ДАННЫЕ: РАНГИ, ПАКИ, ВЕЩИ ================== */
-const RANKS = ['Без пака','Новичок','Опытный','Ветеран','Мастер'];
-const PACKS = [
+let RANKS = ['Без пака','Новичок','Опытный','Ветеран','Мастер'];
+let PACKS = [
   { lvl:1, name:'Пак новичка', cost:0, items:[
     {t:'Рюкзак спортивный'},{t:'Костюмы ранга «Новичок» (любой на выбор)'},{t:'Оружие ранга «Новичок» (пистолет, дробовик)'},
     {t:'Вольтметр'},{t:'Термометр'},{t:'Барометр'},{t:'Детектор кислотности почвы'},{t:'Респиратор'}]},
@@ -704,7 +732,7 @@ const PACKS = [
     {t:'Костюмы ранга «Мастер»'},{t:'Оружие ранга «Мастер»'},{id:'veles'}]}
 ];
 /* pack — номер пака, в который вещь входит; req — ранг, с которого её можно купить */
-const ITEMS = [
+let ITEMS = [
   {id:'smg',   n:'Оружие «Пистолет-пулемёт»', p:25,  req:1, ic:'gun'},
   {id:'da2',   n:'Детектор ДА-2', p:35, req:1, pack:2, ic:'det', note:'Нужен для поиска артефактов'},
   {id:'otklik',n:'Детектор «Отклик»', p:55, req:1, pack:2, ic:'det'},
@@ -719,7 +747,7 @@ const ITEMS = [
   {id:'cgun',  n:'Нестандартное оружие', p:0, req:3, custom:true, ic:'rifle'},
   {id:'exo',   n:'Прото экзоскелет', p:300, req:4, ic:'exo', note:'Нужны скриншоты получения и геймпасс экзоскелетов'}
 ];
-const ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+let ITEM = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
 const ICONS = {
   gun:'<path d="M3 11h11l2-2h5v4h-4l-1 3h-4l-1-3H8l-1 5H4z"/>',
   rifle:'<path d="M2 12h12l2-2h6v3h-5l-1 2h-3l-1-2H9l-1 5H5l1-5H2z"/><path d="M6 9h6"/>',
@@ -729,7 +757,7 @@ const ICONS = {
   sens:'<circle cx="12" cy="12" r="3"/><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7M2 12a10 10 0 0 1 10-10M22 12a10 10 0 0 1-10 10"/>',
   exo:'<circle cx="12" cy="5" r="2"/><path d="M12 7v7M7 9l5 2 5-2M9 22l1-8M15 22l-1-8M6 12l-2 5M18 12l2 5"/>'
 };
-const RATES = [
+let RATES = [
   {r:600,  t:'Излишки артефактов 3 ранга'},
   {r:800,  t:'Излишки артефактов 2 ранга'},
   {r:1200, t:'Излишки артефактов 1 ранга'},
@@ -778,6 +806,9 @@ const FirebaseBackend = {
     const ref = this.fs.collection('users').doc(id), max = kind === 'reputation' ? CONFIG.REP_MAX : Infinity;
     return this.fs.runTransaction(async t => { const sn = await t.get(ref); const v = Math.min(max, Math.max(0, ((sn.data() || {})[kind] || 0) + delta)); t.update(ref, {[kind]: v}); return v; });
   },
+  watchConfig(cb){ return this.fs.collection('config').doc('main').onSnapshot(s => cb(s.exists ? s.data() : null), () => {}); },
+  setConfig(data){ return this.fs.collection('config').doc('main').set(data); },
+  clearConfig(){ return this.fs.collection('config').doc('main').delete(); },
   async getOrder(){ const s = await this.fs.collection('orders').doc('main').get(); return s.exists ? s.data() : null; },
   setOrder(data){ return this.fs.collection('orders').doc('main').set(data); },
   clearOrder(){ return this.fs.collection('orders').doc('main').delete(); },
@@ -840,6 +871,135 @@ addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', () => { if (document.hidden) flushSave(); });
 
 /* ================== ФОН (камуфляж) ================== */
+/* ================== КОНСТРУКТОР: настройки сайта из базы ================== */
+const ICON_NAMES = {gun:'Пистолет', rifle:'Винтовка', det:'Детектор', helm:'Шлем', suit:'Костюм', sens:'Сенсор', exo:'Экзоскелет'};
+let brand = {name:'Чистое Небо', sub:'Портал фракции'};
+function snapshotCfg(){
+  return {
+    brand:{name:brand.name, sub:brand.sub},
+    econ:{m2p:CONFIG.MERIT_TO_POINTS, p2m:CONFIG.POINTS_PER_MERIT, defReward:CONFIG.DEFAULT_REWARD, repMax:CONFIG.REP_MAX, repStep:CONFIG.REP_STEP},
+    ranks:RANKS.slice(),
+    packs:PACKS.map(p => ({lvl:p.lvl, name:p.name, cost:p.cost, lines:p.items.filter(i => !i.id).map(i => i.t)})),
+    items:ITEMS.map(i => ({id:i.id, n:i.n, p:i.p || 0, req:i.req, pack:i.pack || 0, ic:i.ic, note:i.note || '', custom:!!i.custom})),
+    rates:RATES.map(r => ({r:r.r, t:r.t}))
+  };
+}
+const DEF_CFG = JSON.parse(JSON.stringify(snapshotCfg()));
+function applyConfig(raw){
+  const c = Object.assign({}, DEF_CFG, raw || {});
+  const num = (v, d, min, max) => { v = Math.floor(+v); return Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : d; };
+  const txt = (v, d, n) => { v = String(v == null ? '' : v).trim().slice(0, n); return v || d; };
+  const e = Object.assign({}, DEF_CFG.econ, c.econ || {});
+  CONFIG.MERIT_TO_POINTS = num(e.m2p, 15, 1, 100000); CONFIG.POINTS_PER_MERIT = num(e.p2m, 25, 1, 100000);
+  CONFIG.DEFAULT_REWARD = num(e.defReward, 5, 1, 999);
+  CONFIG.REP_MAX = num(e.repMax, 2000, 1, 1000000); CONFIG.REP_STEP = num(e.repStep, 25, 1, CONFIG.REP_MAX);
+  brand = {name:txt((c.brand || {}).name, DEF_CFG.brand.name, 40), sub:txt((c.brand || {}).sub, DEF_CFG.brand.sub, 60)};
+  RANKS = Array.isArray(c.ranks) && c.ranks.length === 5 ? c.ranks.map((x, i) => txt(x, DEF_CFG.ranks[i], 30)) : DEF_CFG.ranks.slice();
+  const items = Array.isArray(c.items) ? c.items : DEF_CFG.items;
+  ITEMS = items.filter(i => i && i.id && i.n).map(i => ({id:String(i.id), n:txt(i.n, '?', 120), p:num(i.p, 0, 0, 1000000), req:num(i.req, 1, 1, 4),
+    pack:num(i.pack, 0, 0, 4) || undefined, ic:ICONS[i.ic] ? i.ic : 'det', note:i.note ? String(i.note).slice(0, 160) : undefined, custom:!!i.custom}));
+  ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+  const packs = Array.isArray(c.packs) && c.packs.length === 4 ? c.packs : DEF_CFG.packs;
+  PACKS = packs.map((p, k) => ({lvl:k + 1, name:txt(p.name, DEF_CFG.packs[k].name, 40), cost:num(p.cost, 0, 0, 100000),
+    items:[...(Array.isArray(p.lines) ? p.lines : []).map(t => String(t).trim()).filter(Boolean).map(t => ({t:t.slice(0, 160)})), ...ITEMS.filter(i => i.pack === k + 1).map(i => ({id:i.id}))]}));
+  RATES = (Array.isArray(c.rates) ? c.rates : DEF_CFG.rates).filter(r => r && r.t).map(r => ({r:num(r.r, 0, 0, CONFIG.REP_MAX), t:txt(r.t, '?', 200)})).sort((a, b) => a.r - b.r);
+  document.title = brand.name;
+  document.querySelectorAll('[data-brand=name]').forEach(el => { el.textContent = brand.name; });
+  document.querySelectorAll('[data-brand=sub]').forEach(el => { el.textContent = brand.sub; });
+  const V = {max:CONFIG.REP_MAX, step:CONFIG.REP_STEP, m2p:CONFIG.MERIT_TO_POINTS, p2m:CONFIG.POINTS_PER_MERIT};
+  document.querySelectorAll('[data-v]').forEach(el => { el.textContent = V[el.dataset.v]; });
+  if (cur){ renderAll(); if (!$('p-menu').hidden) refreshOutfit(); }
+}
+let bd = null, resetArmed = 0;
+const getPath = (o, p) => p.split('.').reduce((a, k) => a == null ? a : a[k], o);
+function setPath(o, p, v){ const ks = p.split('.'), last = ks.pop(); const t = ks.reduce((a, k) => a[k], o); t[last] = v; }
+const iv = (p, v) => `data-p="${p}" value="${esc(v == null ? '' : v)}"`;
+function renderBuilder(){
+  if (!bd) return;
+  const d = bd;
+  const rankOpts = sel => [1,2,3,4].map(i => `<option value="${i}" ${+sel === i ? 'selected' : ''}>${esc(d.ranks[i])}</option>`).join('');
+  const packOpts = sel => `<option value="0" ${!+sel ? 'selected' : ''}>Не в паке</option>` + d.packs.map((p, k) => `<option value="${k+1}" ${+sel === k+1 ? 'selected' : ''}>Пак ${k+1}: ${esc(p.name)}</option>`).join('');
+  const icOpts = sel => Object.entries(ICON_NAMES).map(([k, n]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${n}</option>`).join('');
+  $('b-form').innerHTML = `
+  <div class="bsec"><h3>Фракция</h3><div class="brow grid2">
+    <div class="field"><label>Название</label><input type="text" maxlength="40" ${iv('brand.name', d.brand.name)}></div>
+    <div class="field"><label>Подпись на экране входа</label><input type="text" maxlength="60" ${iv('brand.sub', d.brand.sub)}></div></div></div>
+
+  <div class="bsec"><h3>Экономика</h3><div class="brow grid3">
+    <div class="field"><label>1 заслуга = сколько очков</label><input type="number" min="1" data-t="n" ${iv('econ.m2p', d.econ.m2p)}></div>
+    <div class="field"><label>Сколько очков за 1 заслугу</label><input type="number" min="1" data-t="n" ${iv('econ.p2m', d.econ.p2m)}></div>
+    <div class="field"><label>Награда кода по умолчанию</label><input type="number" min="1" max="999" data-t="n" ${iv('econ.defReward', d.econ.defReward)}></div>
+    <div class="field"><label>Максимум репутации</label><input type="number" min="1" data-t="n" ${iv('econ.repMax', d.econ.repMax)}></div>
+    <div class="field"><label>Репутация за одно задание</label><input type="number" min="1" data-t="n" ${iv('econ.repStep', d.econ.repStep)}></div></div></div>
+
+  <div class="bsec"><h3>Ранги</h3><small>Название ранга совпадает с названием формы. Всего пять уровней, как и комплектов формы.</small>
+    <div class="brow grid4">${d.ranks.map((r, i) => `<div class="field"><label>${i === 0 ? 'Без пака' : 'Ранг ' + i}</label><input type="text" maxlength="30" ${iv('ranks.' + i, r)}></div>`).join('')}</div></div>
+
+  <div class="bsec"><h3>Паки за заслуги</h3><small>Предметы за очки, привязанные к паку, добавляются в его список сами (выбирается в разделе «Предметы»).</small>
+    ${d.packs.map((p, k) => `<div class="bpack"><div class="brow grid2">
+      <div class="field"><label>Пак ${k+1}: название</label><input type="text" maxlength="40" ${iv('packs.' + k + '.name', p.name)}></div>
+      <div class="field"><label>Цена в заслугах</label><input type="number" min="0" data-t="n" ${iv('packs.' + k + '.cost', p.cost)}></div></div>
+      <div class="field" style="margin:0"><label>Что входит (по одному пункту в строке)</label><textarea rows="4" data-t="lines" data-p="packs.${k}.lines">${esc(p.lines.join('\n'))}</textarea></div></div>`).join('')}</div>
+
+  <div class="bsec"><h3>Предметы за очки</h3>
+    ${d.items.map((it, i) => `<div class="brow items">
+      <div class="field"><label>Название</label><input type="text" maxlength="120" ${iv('items.' + i + '.n', it.n)}></div>
+      <div class="field"><label>Цена, очки</label><input type="number" min="0" data-t="n" ${iv('items.' + i + '.p', it.p)}></div>
+      <div class="field"><label>Нужен ранг</label><select data-t="n" data-p="items.${i}.req">${rankOpts(it.req)}</select></div>
+      <div class="field"><label>Иконка</label><select data-p="items.${i}.ic">${icOpts(it.ic)}</select></div>
+      <div class="field"><label>Входит в пак</label><select data-t="n" data-p="items.${i}.pack">${packOpts(it.pack)}</select></div>
+      <div class="field"><label>Примечание</label><input type="text" maxlength="160" ${iv('items.' + i + '.note', it.note)}></div>
+      <label class="bchk"><input type="checkbox" data-t="b" data-p="items.${i}.custom" ${it.custom ? 'checked' : ''}>по вердикту</label>
+      <button class="btn btn-sm btn-danger" type="button" data-act="b-del" data-list="items" data-i="${i}" aria-label="Убрать предмет">✕</button></div>`).join('')}
+    <div><button class="btn btn-sm" type="button" data-act="b-add" data-list="items">Добавить предмет</button></div>
+    <small>Если убрать предмет, у игроков, которые его покупали, он просто перестанет отображаться. Очки за него не возвращаются.</small></div>
+
+  <div class="bsec"><h3>Расценки волонтёров</h3>
+    ${d.rates.map((r, i) => `<div class="brow rates"><div class="field"><label>Репутация</label><input type="number" min="0" data-t="n" ${iv('rates.' + i + '.r', r.r)}></div>
+      <div class="field"><label>Что даётся</label><input type="text" maxlength="200" ${iv('rates.' + i + '.t', r.t)}></div>
+      <button class="btn btn-sm btn-danger" type="button" data-act="b-del" data-list="rates" data-i="${i}" aria-label="Убрать строку">✕</button></div>`).join('')}
+    <div><button class="btn btn-sm" type="button" data-act="b-add" data-list="rates">Добавить строку</button></div></div>
+  <p class="err" id="b-err" role="alert"></p>`;
+}
+const onBuilderInput = e => {
+  const el = e.target, p = el.dataset && el.dataset.p; if (!p || !bd) return;
+  let v = el.value;
+  if (el.dataset.t === 'b') v = el.checked; else if (el.dataset.t === 'n') v = v === '' ? '' : Math.floor(+v) || 0; else if (el.dataset.t === 'lines') v = v.split('\n');
+  setPath(bd, p, v);
+};
+$('b-form').addEventListener('input', onBuilderInput); $('b-form').addEventListener('change', onBuilderInput);
+function openBuilder(){ bd = JSON.parse(JSON.stringify(snapshotCfg())); resetArmed = 0; $('b-reset').textContent = 'Сбросить к стандартным'; renderBuilder(); }
+async function saveBuilder(){
+  if (!isOwner(me()) || !bd) return;
+  const err = $('b-err'), d = bd; err.textContent = '';
+  const fail = m => { err.textContent = m; toast(m, 'bad'); };
+  const n0 = v => Math.max(0, Math.floor(+v) || 0);
+  if (!String(d.brand.name).trim()) return fail('Название фракции не может быть пустым.');
+  if (d.ranks.some(r => !String(r).trim())) return fail('У каждого ранга должно быть название.');
+  if (d.packs.some(p => !String(p.name).trim())) return fail('У каждого пака должно быть название.');
+  if (d.items.some(i => !String(i.n).trim())) return fail('У каждого предмета должно быть название.');
+  if (d.rates.some(r => !String(r.t).trim())) return fail('У каждой строки расценок должен быть текст.');
+  const cfg = {
+    brand:{name:String(d.brand.name).trim(), sub:String(d.brand.sub).trim() || DEF_CFG.brand.sub},
+    econ:{m2p:Math.max(1, n0(d.econ.m2p)), p2m:Math.max(1, n0(d.econ.p2m)), defReward:Math.max(1, n0(d.econ.defReward)), repMax:Math.max(1, n0(d.econ.repMax)), repStep:Math.max(1, n0(d.econ.repStep))},
+    ranks:d.ranks.map(r => String(r).trim()),
+    packs:d.packs.map((p, k) => ({lvl:k + 1, name:String(p.name).trim(), cost:n0(p.cost), lines:p.lines.map(x => String(x).trim()).filter(Boolean)})),
+    items:d.items.map(i => ({id:String(i.id), n:String(i.n).trim(), p:n0(i.p), req:Math.min(4, Math.max(1, n0(i.req) || 1)), pack:Math.min(4, n0(i.pack)), ic:ICONS[i.ic] ? i.ic : 'det', note:String(i.note || '').trim(), custom:!!i.custom})),
+    rates:d.rates.map(r => ({r:n0(r.r), t:String(r.t).trim()}))
+  };
+  try {
+    await Backend.setConfig(cfg); applyConfig(cfg); bd = JSON.parse(JSON.stringify(snapshotCfg())); renderBuilder(); toast('Настройки сохранены и уже действуют у всех.', 'good');
+    await logAudit({kind:'config', note:'изменены настройки сайта'});
+  } catch(e){ fail('Не удалось сохранить: ' + authError(e)); }
+}
+async function resetBuilder(btn){
+  if (!isOwner(me())) return;
+  if (Date.now() - resetArmed > 4000){ resetArmed = Date.now(); btn.textContent = 'Нажмите ещё раз: вернуть стандартные'; return; }
+  try { await Backend.clearConfig(); applyConfig(null); openBuilder(); toast('Возвращены стандартные настройки.', 'good'); await logAudit({kind:'config', note:'сброс настроек к стандартным'}); }
+  catch(e){ toast('Не удалось сбросить: ' + authError(e), 'bad'); }
+}
+const newItemId = () => 'i' + Date.now().toString(36) + rnd(1296).toString(36);
+
 const SKINS = {
   blue:  {base:'#4b7da3', layers:[['#a9b3bd',26],['#8a8d96',22],['#5e6779',22],['#9ec3e6',10],['#6f7a8c',14]]},
   io:    {base:'#6a9cc6', dna:true, layers:[['#b9c6d3',26],['#9aa3ae',22],['#6f7f95',22],['#bfe0fa',10],['#7b8da3',14]]},
@@ -1037,6 +1197,7 @@ function renderAudit(){
     const A = `<b>${esc(r.actorNick)}</b>`, T = `<b>${esc(r.targetNick)}</b>`, d = r.delta > 0 ? '+' + r.delta : r.delta, c = CUR_NAME[r.cur] || '';
     if (r.kind === 'adjust') return `${A} ${r.delta > 0 ? 'выдал' : 'забрал у'} ${T}: ${d} ${c}`;
     if (r.kind === 'code') return `${T} получил по коду от ${A}: ${d} ${c}`;
+    if (r.kind === 'config') return `${A}: ${esc(r.note)}`;
     if (r.kind === 'order') return `${A} изменил главный приказ: «${esc(r.note)}»`;
     if (r.kind === 'item') return `${A} забрал у ${T} предмет: ${esc(r.note)}`;
     if (r.kind === 'role'){ const [role, st] = r.note.includes('|') ? r.note.split('|') : ['deputy', r.note === 'назначен' ? 'on' : 'off'], nm = ROLE_ACC[role] || role;
@@ -1068,16 +1229,18 @@ function enterApp(fresh){
 function applyType(){
   const v = isVol(me());
   document.querySelectorAll('[data-for]').forEach(el => { el.hidden = el.dataset.for !== (v ? 'volunteer' : 'player'); });
-  $('help-vol').hidden = !v; $('help-pl').hidden = v;
+  $('help-vol').hidden = !v; $('help-pl').hidden = v; $('nav-builder').hidden = !isOwner(me());
   $('who-lbl').textContent = v ? 'Волонтёр' : 'Боец';
 }
 function go(page){
+  if (page === 'builder' && !isOwner(me())) page = 'menu';
   if (isVol(me()) && page === 'shop') page = 'rates';
   if (!isVol(me()) && page === 'rates') page = 'menu';
   document.querySelectorAll('nav.side .plate').forEach(b => b.classList.toggle('is-active', b.dataset.page === page));
-  ['menu','shop','rates','order','settings'].forEach(p => { $('p-'+p).hidden = p !== page; });
+  ['menu','shop','rates','order','builder','settings'].forEach(p => { $('p-'+p).hidden = p !== page; });
   closeHelp();
   if (page === 'order') renderOrder();
+  if (page === 'builder') openBuilder();
   if (page === 'menu') requestAnimationFrame(fitAvatar);
   renderAll();
   if (page === 'settings' && canGive(me())) { loadAccounts(); loadAudit(); }
@@ -1240,7 +1403,7 @@ function buyPack(lvl){
   if (lvl !== u.level + 1) return toast('Паки покупаются по порядку.', 'bad');
   if (u.merits < p.cost) return toast('Не хватает ' + (p.cost - u.merits) + ' заслуг.', 'bad');
   u.merits -= p.cost; u.level = lvl;
-  u.extra = u.extra.filter(id => ITEM[id].pack !== lvl);   /* вещи из пака теперь входят в пак, очки за них не возвращаются */
+  u.extra = u.extra.filter(id => !(ITEM[id] && ITEM[id].pack === lvl));   /* вещи из пака теперь входят в пак, очки за них не возвращаются */
   openPacks.add(lvl); save(); renderAll(); refreshOutfit();
   toast(p.cost ? `Пак куплен: ${p.name}.` : `Получен ${p.name}.`, 'good');
 }
@@ -1555,6 +1718,10 @@ document.addEventListener('click', e => {
   else if (a === 'del-go') deleteAccount();
   else if (a === 'cloth-pick') $('file-' + b.dataset.kind).click();
   else if (a === 'cloth-reset'){ setCustom(b.dataset.kind, '').then(() => { refreshOutfit(); toast('Возвращена форма по рангу.'); }); }
+  else if (a === 'b-save') saveBuilder();
+  else if (a === 'b-reset') resetBuilder(b);
+  else if (a === 'b-add'){ if (b.dataset.list === 'items') bd.items.push({id:newItemId(), n:'', p:50, req:1, pack:0, ic:'det', note:'', custom:false}); else bd.rates.push({r:0, t:''}); renderBuilder(); }
+  else if (a === 'b-del'){ bd[b.dataset.list].splice(+b.dataset.i, 1); renderBuilder(); }
   else if (a === 'ord-edit') openOrderEdit();
   else if (a === 'ord-cancel'){ ordEditing = false; ordDraft = null; renderOrder(); }
   else if (a === 'ord-add'){ ordDraft.tasks.push({t:'', goal:100, done:0}); renderOrderForm(); }
@@ -1578,6 +1745,7 @@ $('code-in').addEventListener('keydown', e => { if (e.key === 'Enter') redeem();
 /* ================== СТАРТ ================== */
 try {
   Backend.init();
+  Backend.watchConfig(c => applyConfig(c));
   Backend.onAuth(id => { if (regBusy) return; if (id) startSession(id, false); else endSession(); });
 } catch(e){ $('boot').textContent = 'Не удалось подключиться к базе: ' + e.message; }
 </script>
